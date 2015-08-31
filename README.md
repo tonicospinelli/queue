@@ -13,7 +13,7 @@ use Queue\Driver;
 use Queue\DriverManager;
 use QueueTest\Fake\ProducerFake;
 
-$configuration = new Configuration(Driver::AMQP, 'rabbit.kanui.dev', 5672, 'kanui', 'kanui');
+$configuration = new Configuration(Driver::AMQP, 'host', 5672, 'user', 'pass');
 
 $connection = DriverManager::getConnection($configuration);
 
@@ -35,7 +35,7 @@ use Queue\DriverManager;
 use QueueTest\Fake\ConsumerFake;
 
 $connection = DriverManager::getConnection(
-    new Configuration(Driver::AMQP, 'rabbit.kanui.dev', 5672, 'kanui', 'kanui')
+    new Configuration(Driver::AMQP, 'host', 5672, 'user', 'pass')
 );
 
 $queue = new ConsumerFake($connection, ConsumerFake::PERSISTENT);
