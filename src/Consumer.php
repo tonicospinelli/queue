@@ -30,8 +30,10 @@ abstract class Consumer extends AbstractQueue implements ConsumerInterface
      */
     final public function consume()
     {
-        while (($message = $this->getConnection()->fetchOne($this)) !== null && $this->isPersistent()) {
-            $this->process($message);
+        while (($message = $this->getConnection()->fetchOne($this)) !== null || $this->isPersistent()) {
+	    if ($message instanceof MessageInterface) {
+                $this->process($message);
+            }
         }
     }
 }
