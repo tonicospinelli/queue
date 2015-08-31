@@ -1,0 +1,35 @@
+{
+    "name": "tricae/queue",
+    "description": "A PHP Lib for Handle Queue (Rabbit, Redis, ...)",
+    "type": "library",
+    "require": {
+        "videlalvaro/php-amqplib": "2.4.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.2.*",
+        "phpmd/phpmd": "@stable",
+        "squizlabs/php_codesniffer": "@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "Queue\\": "src",
+            "QueueTest\\": "tests"
+        }
+    },
+    "authors": [
+        {
+            "name": "markomafs",
+            "email": "marco.souza@tricae.com.br"
+        },
+        {
+            "name": "tonicospinelli",
+            "email": "antonio.spinelli@kanui.com.br"
+        }
+    ],
+    "minimum-stability": "RC",
+    "scripts": {
+        "test": "phpunit -c tests/phpunit.xml",
+        "phpmd": "phpmd src text cleancode,codesize,controversial,design,naming,unusedcode",
+        "phpcs": "phpcs --standard=PSR2 src"
+    }
+}
