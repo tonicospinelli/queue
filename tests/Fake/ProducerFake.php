@@ -2,6 +2,7 @@
 
 namespace QueueTest\Fake;
 
+use Queue\ExchangeInterface;
 use Queue\Producer;
 
 /**
@@ -22,4 +23,13 @@ class ProducerFake extends Producer
     {
         return 'amqp.direct';
     }
+
+    public function getExchange()
+    {
+        $exchange = parent::getExchange();
+        $exchange->setAutoDelete(ExchangeInterface::AMQP_AUTO_DELETE_TRUE);
+        return $exchange;
+    }
+
+
 }
