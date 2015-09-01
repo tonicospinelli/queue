@@ -4,6 +4,8 @@ namespace QueueTest\Fake;
 
 use Queue\Consumer;
 use Queue\Driver\MessageInterface;
+use Queue\Exception\QueueException;
+use Queue\ExchangeInterface;
 
 /**
  * @author Marco.Souza<marco.souza@tricae.com.br>
@@ -29,6 +31,6 @@ class ConsumerFake extends Consumer
      */
     public function process(MessageInterface $message)
     {
-        echo $message->getBody() . ' ... ok' . PHP_EOL;
+        echo $message->getBody();
     }
 }

@@ -12,6 +12,7 @@ use Queue\Driver\Exception\DriverException;
 interface Driver
 {
     const AMQP = 'amqp';
+    const IN_MEMORY = 'inMemory';
 
     /**
      * Attempts to create a connection with the queue.
