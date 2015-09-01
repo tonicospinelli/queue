@@ -1,6 +1,6 @@
 <?php
 
-namespace Queue\Driver\Amqp;
+namespace Queue\Driver\InMemory;
 
 use Queue\Driver\Exception\AbstractDriverException;
 
