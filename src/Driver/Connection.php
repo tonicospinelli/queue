@@ -8,6 +8,7 @@
 namespace Queue\Driver;
 
 use Queue\ConsumerInterface;
+use Queue\Exchange;
 use Queue\ProducerInterface;
 
 interface Connection
@@ -38,4 +39,9 @@ interface Connection
      * @return MessageInterface|null
      */
     public function fetchOne(ConsumerInterface $consumer);
+
+    /**
+     * @return Exchange
+     */
+    public function getExchange();
 }

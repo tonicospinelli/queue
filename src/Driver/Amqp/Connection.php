@@ -2,9 +2,9 @@
 
 namespace Queue\Driver\Amqp;
 
+use Queue\Driver\Amqp\AmqpExchange;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
-use PhpAmqpLib\Message\AMQPMessage;
 use Queue\AbstractQueue;
 use Queue\ConfigurationInterface;
 use Queue\ConsumerInterface;
@@ -109,7 +109,26 @@ class Connection implements \Queue\Driver\Connection
             AbstractQueue::QUEUE_NO_WAIT,
             $queue->getQueueArguments()
         );
-        $channel->exchange_declare($queue->getWorkingExchangeName(), AbstractQueue::CHANNEL_DIRECT);
+        $exchange = $queue->getExchange();
+        $channel->exchange_declare(
+            $queue->getWorkingExchangeName(),
+            $exchange->getChannel(),
+            $exchange->isPassive(),
+            $exchange->isDurable(),
+            $exchange->isAutoDelete(),
+            $exchange->isInternal(),
+            $exchange->isNoWait(),
+            $exchange->getArguments(),
+            $exchange->getTickets()
+        );
         $channel->queue_bind($queue->getWorkingQueueName(), $queue->getWorkingExchangeName());
+    }
+
+    /**
+     * @return AmqpExchange
+     */
+    public function getExchange()
+    {
+        return new AmqpExchange();
     }
 }

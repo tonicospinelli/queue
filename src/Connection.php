@@ -89,4 +89,12 @@ class Connection implements DriverConnection
     {
         return $this->connect()->fetchOne($consumer);
     }
+
+    /**
+     * @return Exchange
+     */
+    public function getExchange()
+    {
+        return $this->connect()->getExchange();
+    }
 }

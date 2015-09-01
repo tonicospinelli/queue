@@ -38,4 +38,12 @@ abstract class AbstractQueue implements InterfaceQueue
     {
         return array();
     }
+
+    /**
+     * @return Exchange
+     */
+    public function getExchange()
+    {
+        return $this->getConnection()->getExchange();
+    }
 }

@@ -36,4 +36,14 @@ interface InterfaceQueue
     public function getWorkingQueueName();
 
     public function getWorkingExchangeName();
+
+    /**
+     * @return array
+     */
+    public function getQueueArguments();
+
+    /**
+     * @return Exchange
+     */
+    public function getExchange();
 }
