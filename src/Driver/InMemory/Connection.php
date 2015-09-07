@@ -48,6 +48,16 @@ class Connection implements \Queue\Driver\Connection
     }
 
     /**
+     * @inheritdoc
+     */
+    public function __destruct()
+    {
+        foreach($this->queues as $queue){
+            $this->deleteQueue($queue);
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getDriver()

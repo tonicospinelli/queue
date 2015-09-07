@@ -3,13 +3,18 @@
     "description": "A PHP Lib for Handle Queue (Rabbit, Redis, ...)",
     "type": "library",
     "require": {
-        "php": ">=5.4.0",
-        "videlalvaro/php-amqplib": "2.4.*"
+        "php": ">=5.4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.2.*",
+        "videlalvaro/php-amqplib": "^2.4",
+        "predis/predis": "^1.0",
+        "phpunit/phpunit": "@stable",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "@stable"
+    },
+    "suggest": {
+        "videlalvaro/php-amqplib": "^2.4",
+        "predis/predis": "^1.0"
     },
     "autoload": {
         "psr-4": {

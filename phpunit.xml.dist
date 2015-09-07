@@ -1,9 +1,13 @@
 <phpunit bootstrap="tests/bootstrap.php" colors="true">
     <php>
-        <env name="RABBIT_HOST" value="127.0.0.1"/>
+        <env name="RABBIT_HOST" value="rabbit.kanui.dev"/>
         <env name="RABBIT_PORT" value="5672"/>
-        <env name="RABBIT_USERNAME" value="guest"/>
-        <env name="RABBIT_PASSWORD" value="guest"/>
+        <env name="RABBIT_USERNAME" value="kanui"/>
+        <env name="RABBIT_PASSWORD" value="kanui"/>
+        <env name="REDIS_HOST" value="127.0.0.1"/>
+        <env name="REDIS_PORT" value="6973"/>
+        <env name="REDIS_USERNAME" value=""/>
+        <env name="REDIS_PASSWORD" value=""/>
     </php>
     <testsuites>
         <testsuite name="all">

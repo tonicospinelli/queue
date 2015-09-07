@@ -12,6 +12,7 @@ interface Driver
 {
     const AMQP = 'amqp';
     const IN_MEMORY = 'inMemory';
+    const REDIS = 'redis';
 
     /**
      * @return string
