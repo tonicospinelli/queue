@@ -2,6 +2,7 @@
 
 namespace Queue;
 
+use Exception\RetryQueueException;
 use Queue\Driver\MessageInterface;
 
 interface ConsumerInterface extends InterfaceQueue
@@ -16,6 +17,7 @@ interface ConsumerInterface extends InterfaceQueue
 
     /**
      * @param MessageInterface $message
+     * @throws RetryQueueException
      * @return void
      */
     public function process(MessageInterface $message);

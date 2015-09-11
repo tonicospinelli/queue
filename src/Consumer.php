@@ -4,6 +4,7 @@ namespace Queue;
 
 use Queue\Driver\Connection as DriverConnection;
 use Queue\Driver\MessageInterface;
+use Queue\Exception\RetryQueueException;
 
 abstract class Consumer extends AbstractQueue implements ConsumerInterface
 {
@@ -33,7 +34,12 @@ abstract class Consumer extends AbstractQueue implements ConsumerInterface
     {
         while (($message = $this->getConnection()->fetchOne($this)) !== null || $this->isPersistent()) {
 	        if ($message instanceof MessageInterface) {
-                $this->process($message);
+                try {
+                    $this->process($message);
+                } catch (RetryQueueException $retryQueue) {
+                    $producer = new ProducerRetry($this);
+                    $producer->publish($message);
+                }
             }
         }
     }
