@@ -11,6 +11,10 @@ use Queue\Driver\Connection as DriverConnection;
 
 abstract class AbstractQueue implements InterfaceQueue
 {
+    /**
+     * 10 second
+     */
+    const MESSAGE_TIME_TO_LIVE = 10000;
 
     /**
      * @var DriverConnection
@@ -45,5 +49,10 @@ abstract class AbstractQueue implements InterfaceQueue
     public function getExchange()
     {
         return $this->getConnection()->getExchange();
+    }
+
+    public function getTimeToLiveInMilliseconds()
+    {
+        return self::MESSAGE_TIME_TO_LIVE;
     }
 }
