@@ -46,6 +46,7 @@ class ProducerTest extends \PHPUnit_Framework_TestCase {
 
     public function testProducerFanout()
     {
+        $this->markTestIncomplete('This test not changes exchange data');
         $connection = DriverManager::getConnection(new Configuration(Driver::AMQP, RABBIT_HOST, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD));
         $producer = new ProducerFake($connection);
         $message = $producer->prepare('test: '. rand() );

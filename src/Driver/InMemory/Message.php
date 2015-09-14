@@ -2,22 +2,8 @@
 
 namespace Queue\Driver\InMemory;
 
-use Queue\Driver\MessageInterface;
+use Queue\Driver\Message as DriverMessage;
 
-class Message implements MessageInterface
+class Message extends DriverMessage
 {
-    protected $body;
-
-    public function __construct($body, array $properties = array())
-    {
-        $this->body = $body;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
 }

@@ -54,7 +54,7 @@ class Connection implements DriverConnection
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
     public function close()
     {
@@ -62,9 +62,7 @@ class Connection implements DriverConnection
     }
 
     /**
-     * @param MessageInterface $message
-     * @param ProducerInterface $producer
-     * @return void
+     * {@inheritdoc}
      */
     public function publish(MessageInterface $message, ProducerInterface $producer)
     {
@@ -72,18 +70,15 @@ class Connection implements DriverConnection
     }
 
     /**
-     * @param string $message
-     * @param array $properties
-     * @return MessageInterface
+     * {@inheritdoc}
      */
-    public function prepare($message, array $properties = array())
+    public function prepare($message, array $properties = array(), $id = null)
     {
-        return $this->connect()->prepare($message, $properties);
+        return $this->connect()->prepare($message, $properties, $id);
     }
 
     /**
-     * @param ConsumerInterface $consumer
-     * @return MessageInterface|null
+     * {@inheritdoc}
      */
     public function fetchOne(ConsumerInterface $consumer)
     {
@@ -91,10 +86,26 @@ class Connection implements DriverConnection
     }
 
     /**
-     * @return Exchange
+     * {@inheritdoc}
      */
     public function getExchange()
     {
         return $this->connect()->getExchange();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ack(MessageInterface $message)
+    {
+        $this->connect()->ack($message);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function nack(MessageInterface $message)
+    {
+        $this->connect()->nack($message);
     }
 }
