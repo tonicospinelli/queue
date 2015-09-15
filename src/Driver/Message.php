@@ -2,8 +2,11 @@
 
 namespace Queue\Driver;
 
+use Queue\Component\BitwiseFlag;
+
 class Message implements MessageInterface
 {
+    use BitwiseFlag;
     private $id;
     private $body;
     private $properties;
@@ -47,5 +50,56 @@ class Message implements MessageInterface
     public function hasProperty($name)
     {
         return isset($this->properties[$name]);
+    }
+
+    /**
+     * @param bool $confirm
+     * @return void
+     */
+    public function setAck($confirm = true)
+    {
+        $this->setFlag(self::ACK, $confirm);
+    }
+
+    /**
+     * @param bool $confirm
+     * @return void
+     */
+    public function setNotAck($confirm = true)
+    {
+        $this->setFlag(self::NOT_ACK, $confirm);
+    }
+
+    /**
+     * @param bool $confirm
+     * @return void
+     */
+    public function setRequeue($confirm = true)
+    {
+        $this->setFlag(self::REQUEUE, $confirm);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAck()
+    {
+        return $this->isFlagSet(self::ACK);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNotAck()
+    {
+        return $this->isFlagSet(self::NOT_ACK);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequeue()
+    {
+        return $this->isFlagSet(self::REQUEUE);
     }
 }

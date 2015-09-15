@@ -2,7 +2,7 @@
 
 namespace Queue;
 
-use Exception\RetryQueueException;
+use Queue\Exception\RetryQueueException;
 use Queue\Driver\MessageInterface;
 
 interface ConsumerInterface extends InterfaceQueue

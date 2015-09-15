@@ -76,7 +76,7 @@ class Connection implements \Queue\Driver\Connection
         $this->declareQueue($consumer);
         $channel = $this->getChannel();
 
-        $message = $channel->basic_get($consumer->getWorkingQueueName(), AbstractQueue::QUEUE_NOT_ACK);
+        $message = $channel->basic_get($consumer->getWorkingQueueName());
 
         if (!$message) {
             return null;
@@ -144,6 +144,6 @@ class Connection implements \Queue\Driver\Connection
      */
     public function nack(MessageInterface $message)
     {
-        $this->getChannel()->basic_nack($message->getId());
+        $this->getChannel()->basic_nack($message->getId(), false, $message->isRequeue());
     }
 }

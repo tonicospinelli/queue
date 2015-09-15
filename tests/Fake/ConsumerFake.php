@@ -26,13 +26,12 @@ class ConsumerFake extends Consumer
     }
 
     /**
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritdoc}
      */
     public function process(MessageInterface $message)
     {
         echo $message->getBody();
-        $this->getConnection()->ack($message);
+        $message->setAck();
     }
 
     public function getExchange()
