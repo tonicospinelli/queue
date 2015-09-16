@@ -9,9 +9,6 @@ use Queue\ConfigurationInterface;
 use Queue\ConsumerInterface;
 use Queue\Driver\MessageInterface;
 use Queue\InterfaceQueue;
-use Queue\Migration\Entity\AbstractBind as BindEntity;
-use Queue\Migration\Entity\AbstractExchange as ExchangeEntity;
-use Queue\Migration\Entity\AbstractQueue as QueueEntity;
 use Queue\ProducerInterface;
 
 class Connection implements \Queue\Driver\Connection
@@ -148,64 +145,5 @@ class Connection implements \Queue\Driver\Connection
     public function nack(MessageInterface $message)
     {
         $this->getChannel()->basic_nack($message->getId(), false, $message->isRequeue());
-    }
-
-
-    /**
-     * @param QueueEntity $queue
-     * @return void
-     */
-    public function createQueue(QueueEntity $queue)
-    {
-        $channel = $this->connection->channel();
-        $channel->queue_declare($queue->getQueueName(), false, $queue->isDurable(), false, $queue->isAutoDelete(), false, $queue->getQueueArguments());
-    }
-
-    /**
-     * @param QueueEntity $queue
-     * @return void
-     */
-    public function dropQueue(QueueEntity $queue)
-    {
-        $channel = $this->connection->channel();
-        $channel->queue_delete($queue->getQueueName());
-    }
-
-    /**
-     * @param ExchangeEntity $exchange
-     * @return void
-     */
-    public function createExchange(ExchangeEntity $exchange)
-    {
-        $channel = $this->connection->channel();
-        $channel->exchange_declare($exchange->getExchangeName(), $exchange->getType(), false, $exchange->isDurable(), $exchange->isAutoDelete(), $exchange->isInternal() , false, $exchange->getExchangeArguments());
-    }
-
-    /**
-     * @param ExchangeEntity $exchange
-     * @return void
-     */
-    public function dropExchange(ExchangeEntity $exchange)
-    {
-        $channel = $this->connection->channel();
-        $channel->exchange_delete($exchange->getExchangeName());
-    }
-
-    /**
-     * @param BindEntity $queue
-     * @return void
-     */
-    public function createBind(BindEntity $queue)
-    {
-        // TODO: Implement createBind() method.
-    }
-
-    /**
-     * @param BindEntity $queue
-     * @return void
-     */
-    public function dropBind(BindEntity $queue)
-    {
-        // TODO: Implement dropBind() method.
     }
 }
