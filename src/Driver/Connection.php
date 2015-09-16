@@ -13,7 +13,6 @@ use Queue\ProducerInterface;
 
 interface Connection
 {
-    const DRIVER_AMQP = 'amqp';
 
     /**
      * @return void
@@ -30,9 +29,10 @@ interface Connection
     /**
      * @param string $message
      * @param array $properties
+     * @param string $id
      * @return MessageInterface
      */
-    public function prepare($message, array $properties = array());
+    public function prepare($message, array $properties = array(), $id = null);
 
     /**
      * @param ConsumerInterface $consumer
@@ -44,4 +44,16 @@ interface Connection
      * @return Exchange
      */
     public function getExchange();
+
+    /**
+     * @param MessageInterface $message
+     * @return void
+     */
+    public function ack(MessageInterface $message);
+
+    /**
+     * @param MessageInterface $message
+     * @return void
+     */
+    public function nack(MessageInterface $message);
 }

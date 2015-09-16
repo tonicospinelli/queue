@@ -7,8 +7,6 @@
 
 namespace Queue;
 
-use Queue\Driver\MessageInterface;
-
 interface InterfaceQueue
 {
 

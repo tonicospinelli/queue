@@ -6,6 +6,7 @@ use Driver\InMemory\InMemoryExchange;
 use Queue\ConfigurationInterface;
 use Queue\ConsumerInterface;
 use Queue\Driver\MessageInterface;
+use Queue\Exception\NotImplementedException;
 use Queue\ProducerInterface;
 
 class Connection implements \Queue\Driver\Connection
@@ -19,21 +20,22 @@ class Connection implements \Queue\Driver\Connection
     {}
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
     public function close()
     {}
 
     /**
-     * @param string $message
-     * @param array $properties
-     * @return MessageInterface
+     * {@inheritdoc}
      */
-    public function prepare($message, array $properties = array())
+    public function prepare($message, array $properties = array(), $id = null)
     {
-        return new Message($message, $properties);
+        return new Message($message, $properties, $id);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function publish(MessageInterface $message, ProducerInterface $producer)
     {
         $connection = $this->getConnection($producer->getWorkingQueueName());
@@ -47,9 +49,9 @@ class Connection implements \Queue\Driver\Connection
         }
         return $this->connection[$queue];
     }
+
     /**
-     * @param ConsumerInterface $consumer
-     * @return MessageInterface|null
+     * {@inheritdoc}
      */
     public function fetchOne(ConsumerInterface $consumer)
     {
@@ -65,10 +67,27 @@ class Connection implements \Queue\Driver\Connection
     }
 
     /**
-     * @return InMemoryExchange
+     * {@inheritdoc}
      */
     public function getExchange()
     {
         return new InMemoryExchange();
+    }
+
+    /**
+     * @param MessageInterface $message
+     * @return void
+     */
+    public function ack(MessageInterface $message)
+    {
+    }
+
+    /**
+     *
+     * @param MessageInterface $message
+     * @return void
+     */
+    public function nack(MessageInterface $message)
+    {
     }
 }

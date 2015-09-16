@@ -2,7 +2,6 @@
 
 namespace Queue\Driver\Amqp;
 
-use Queue\Driver\Amqp\AmqpExchange;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
 use Queue\AbstractQueue;
@@ -19,9 +18,9 @@ class Connection implements \Queue\Driver\Connection
      */
     private $connection;
     /**
-     * @var AMQPChannel[]
+     * @var AMQPChannel
      */
-    private $channels;
+    private $channel;
 
     public function __construct(ConfigurationInterface $configuration)
     {
@@ -44,7 +43,7 @@ class Connection implements \Queue\Driver\Connection
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
     public function close()
     {
@@ -52,54 +51,54 @@ class Connection implements \Queue\Driver\Connection
     }
 
     /**
-     * @param string $message
-     * @param array $properties
-     * @return MessageInterface
+     * {@inheritdoc}
      */
-    public function prepare($message, array $properties = array())
+    public function prepare($message, array $properties = array(), $id = null)
     {
-        return new Message($message, $properties);
-    }
-
-    public function publish(MessageInterface $message, ProducerInterface $producer)
-    {
-        $this->declareQueue($producer);
-        $channel = $this->getChannel($producer);
-        $channel->basic_publish($message, $producer->getWorkingExchangeName());
+        return new Message($message, $properties, $id);
     }
 
     /**
-     * @param ConsumerInterface $consumer
-     * @return MessageInterface|null
+     * {@inheritdoc}
+     */
+    public function publish(MessageInterface $message, ProducerInterface $producer)
+    {
+        $this->declareQueue($producer);
+        $channel = $this->getChannel();
+        $channel->basic_publish(Message::createAMQPMessage($message), $producer->getWorkingExchangeName());
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function fetchOne(ConsumerInterface $consumer)
     {
         $this->declareQueue($consumer);
-        $channel = $this->getChannel($consumer);
+        $channel = $this->getChannel();
 
-        $message = $channel->basic_get($consumer->getWorkingQueueName(), AbstractQueue::QUEUE_ACK);
+        $message = $channel->basic_get($consumer->getWorkingQueueName());
 
         if (!$message) {
             return null;
         }
-        return $this->prepare($message->body);
+
+        return Message::create($message);
     }
 
     /**
-     * @param InterfaceQueue $queue
      * @return AMQPChannel
      */
-    protected function getChannel(InterfaceQueue $queue)
+    protected function getChannel()
     {
-        if (!isset($this->channels[$queue->getWorkingQueueName()])) {
-            $this->channels[$queue->getWorkingQueueName()] = $this->connection->channel();
+        if (!$this->channel) {
+            $this->channel = $this->connection->channel();
         }
-        return $this->channels[$queue->getWorkingQueueName()];
+        return $this->channel;
     }
 
     protected function declareQueue(InterfaceQueue $queue)
     {
-        $channel = $this->getChannel($queue);
+        $channel = $this->getChannel();
         $channel->queue_declare(
             $queue->getWorkingQueueName(),
             AbstractQueue::QUEUE_NOT_PASSIVE,
@@ -125,10 +124,26 @@ class Connection implements \Queue\Driver\Connection
     }
 
     /**
-     * @return AmqpExchange
+     * {@inheritdoc}
      */
     public function getExchange()
     {
         return new AmqpExchange();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ack(MessageInterface $message)
+    {
+        $this->getChannel()->basic_ack($message->getId());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function nack(MessageInterface $message)
+    {
+        $this->getChannel()->basic_nack($message->getId(), false, $message->isRequeue());
     }
 }

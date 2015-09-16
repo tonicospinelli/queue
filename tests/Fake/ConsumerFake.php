@@ -17,20 +17,27 @@ class ConsumerFake extends Consumer
 
     public function getWorkingQueueName()
     {
-        return 'test.queue';
+        return 'test.queue.fake';
     }
 
     public function getWorkingExchangeName()
     {
-        return 'amqp.direct';
+        return 'test.queue.fake';
     }
 
     /**
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritdoc}
      */
     public function process(MessageInterface $message)
     {
         echo $message->getBody();
+        $message->setAck();
+    }
+
+    public function getExchange()
+    {
+        $exchange = parent::getExchange();
+        $exchange->setAutoDelete(ExchangeInterface::AMQP_AUTO_DELETE_FALSE);
+        return $exchange;
     }
 }

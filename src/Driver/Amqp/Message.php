@@ -3,20 +3,28 @@
 namespace Queue\Driver\Amqp;
 
 use PhpAmqpLib\Message\AMQPMessage;
-use Queue\Driver\MessageInterface;
+use Queue\Driver\Message as DriverMessage;
+use Queue\Driver\MessageInterface as DriverMessageInterface;
 
-class Message extends AMQPMessage implements MessageInterface
+class Message extends DriverMessage implements MessageInterface
 {
-    public function __construct($body, array $properties = array())
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(AMQPMessage $message)
     {
-        parent::__construct($body, $properties);
+        $id = null;
+        if ($message->has('delivery_tag')) {
+            $id = $message->get('delivery_tag');
+        }
+        return new static($message->body, $message->get_properties(), $id);
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getBody()
+    public static function createAMQPMessage(DriverMessageInterface $message)
     {
-        return $this->body;
+        return new AMQPMessage($message->getBody(), $message->getProperties());
     }
 }
