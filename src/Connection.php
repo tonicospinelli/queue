@@ -5,6 +5,10 @@ namespace Queue;
 use Queue\Driver\Connection as DriverConnection;
 use Queue\Driver\MessageInterface;
 
+use Queue\Migration\Entity\AbstractBind as BindEntity;
+use Queue\Migration\Entity\AbstractExchange as ExchangeEntity;
+use Queue\Migration\Entity\AbstractQueue as QueueEntity;
+
 class Connection implements DriverConnection
 {
     /**
@@ -107,5 +111,59 @@ class Connection implements DriverConnection
     public function nack(MessageInterface $message)
     {
         $this->connect()->nack($message);
+    }
+
+    /**
+     * @param QueueEntity $queue
+     * @return void
+     */
+    public function createQueue(QueueEntity $queue)
+    {
+        $this->connect()->createQueue($queue);
+    }
+
+    /**
+     * @param QueueEntity $queue
+     * @return void
+     */
+    public function dropQueue(QueueEntity $queue)
+    {
+        $this->connect()->dropQueue($queue);
+    }
+
+    /**
+     * @param ExchangeEntity $queue
+     * @return void
+     */
+    public function createExchange(ExchangeEntity $queue)
+    {
+        $this->connect()->createExchange($queue);
+    }
+
+    /**
+     * @param ExchangeEntity $queue
+     * @return void
+     */
+    public function dropExchange(ExchangeEntity $queue)
+    {
+        $this->connect()->dropExchange($queue);
+    }
+
+    /**
+     * @param BindEntity $queue
+     * @return void
+     */
+    public function createBind(BindEntity $queue)
+    {
+        $this->connect()->createBind($queue);
+    }
+
+    /**
+     * @param BindEntity $queue
+     * @return void
+     */
+    public function dropBind(BindEntity $queue)
+    {
+        $this->connect()->dropBind($queue);
     }
 }

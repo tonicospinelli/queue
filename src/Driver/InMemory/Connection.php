@@ -8,6 +8,9 @@ use Queue\ConsumerInterface;
 use Queue\Driver\MessageInterface;
 use Queue\Exception\NotImplementedException;
 use Queue\ProducerInterface;
+use Queue\Migration\Entity\AbstractBind as BindEntity;
+use Queue\Migration\Entity\AbstractExchange as ExchangeEntity;
+use Queue\Migration\Entity\AbstractQueue as QueueEntity;
 
 class Connection implements \Queue\Driver\Connection
 {
@@ -89,5 +92,61 @@ class Connection implements \Queue\Driver\Connection
      */
     public function nack(MessageInterface $message)
     {
+    }
+
+
+
+    /**
+     * @param QueueEntity $queue
+     * @return void
+     */
+    public function createQueue(QueueEntity $queue)
+    {
+        // TODO: Implement createQueue() method.
+    }
+
+    /**
+     * @param QueueEntity $queue
+     * @return void
+     */
+    public function dropQueue(QueueEntity $queue)
+    {
+        // TODO: Implement dropQueue() method.
+    }
+
+    /**
+     * @param ExchangeEntity $queue
+     * @return void
+     */
+    public function createExchange(ExchangeEntity $queue)
+    {
+        // TODO: Implement createExchange() method.
+    }
+
+    /**
+     * @param ExchangeEntity $queue
+     * @return void
+     */
+    public function dropExchange(ExchangeEntity $queue)
+    {
+        // TODO: Implement dropExchange() method.
+    }
+
+    /**
+     * @param BindEntity $queue
+     * @return void
+     */
+    public function createBind(BindEntity $queue)
+    {
+        // TODO: Implement createBind() method.
+    }
+
+    /**
+     * @param BindEntity $queue
+     * @return void
+     */
+    public function dropBind(BindEntity $queue)
+    {
+        // TODO: Implement dropBind() method.
     }
 }
