@@ -3,6 +3,7 @@
     "description": "A PHP Lib for Handle Queue (Rabbit, Redis, ...)",
     "type": "library",
     "require": {
+        "php": ">=5.4.0",
         "videlalvaro/php-amqplib": "2.4.*"
     },
     "require-dev": {
