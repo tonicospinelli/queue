@@ -9,6 +9,9 @@ namespace Queue\Driver;
 
 use Queue\ConsumerInterface;
 use Queue\Exchange;
+use Queue\Migration\Entity\AbstractExchange;
+use Queue\Migration\Entity\AbstractQueue;
+use Queue\Migration\Entity\AbstractBind;
 use Queue\ProducerInterface;
 
 interface Connection
@@ -56,4 +59,44 @@ interface Connection
      * @return void
      */
     public function nack(MessageInterface $message);
+
+    /**
+     * @param AbstractQueue $queue
+     * @return void
+     */
+    public function createQueue(AbstractQueue $queue);
+
+    /**
+     * @param AbstractQueue $queue
+     * @return void
+     */
+    public function dropQueue(AbstractQueue $queue);
+
+
+    /**
+     * @param AbstractExchange $queue
+     * @return void
+     */
+    public function createExchange(AbstractExchange $queue);
+
+    /**
+     * @param AbstractExchange $queue
+     * @return void
+     */
+    public function dropExchange(AbstractExchange $queue);
+
+
+    /**
+     * @param AbstractBind $queue
+     * @return void
+     */
+    public function createBind(AbstractBind $queue);
+
+    /**
+     * @param AbstractBind $queue
+     * @return void
+     */
+    public function dropBind(AbstractBind $queue);
+
+
 }
