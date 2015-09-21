@@ -10,6 +10,7 @@ class DriverManager
     private static $drivers = array(
         Driver::AMQP => 'Queue\Driver\Amqp\Driver',
         Driver::IN_MEMORY => 'Queue\Driver\InMemory\Driver',
+        Driver::SYSTEM_V => 'Queue\Driver\SystemV\Driver',
     );
 
     /**

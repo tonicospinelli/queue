@@ -13,6 +13,7 @@ interface Driver
 {
     const AMQP = 'amqp';
     const IN_MEMORY = 'inMemory';
+    const SYSTEM_V = 'systemV';
 
     /**
      * Attempts to create a connection with the queue.
