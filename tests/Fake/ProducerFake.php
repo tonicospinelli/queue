@@ -2,8 +2,9 @@
 
 namespace QueueTest\Fake;
 
-use Queue\ExchangeInterface;
+use Queue\Entity\InterfaceExchange;
 use Queue\Producer;
+use QueueTest\Mocks\Entity\ExchangeEntityFake;
 
 /**
  * @author Marco.Souza<marco.souza@tricae.com.br>
@@ -13,23 +14,12 @@ use Queue\Producer;
 
 class ProducerFake extends Producer
 {
-
-    public function getWorkingQueueName()
+    /**
+     * @return InterfaceExchange
+     */
+    public function exchange()
     {
-        return 'test.queue.fake';
+        return new ExchangeEntityFake();
     }
-
-    public function getWorkingExchangeName()
-    {
-        return 'test.queue.fake';
-    }
-
-    public function getExchange()
-    {
-        $exchange = parent::getExchange();
-        $exchange->setAutoDelete(ExchangeInterface::AMQP_AUTO_DELETE_FALSE);
-        return $exchange;
-    }
-
 
 }

@@ -1,12 +1,9 @@
 <?php
 
-namespace QueueTest\Fake;
+namespace QueueTest\Mocks\Consumer;
 
 use Queue\Consumer;
 use Queue\Driver\MessageInterface;
-use Queue\Entity\InterfaceQueue;
-use Queue\Exception\QueueException;
-use Queue\ExchangeInterface;
 use QueueTest\Mocks\Entity\QueueEntityFake;
 
 /**
@@ -14,7 +11,7 @@ use QueueTest\Mocks\Entity\QueueEntityFake;
  * @since 2015.08.28
  *
  */
-class ConsumerFake extends Consumer
+class ConsumerFakeWithNoAck extends Consumer
 {
     /**
      * {@inheritdoc}
@@ -22,12 +19,11 @@ class ConsumerFake extends Consumer
     public function process(MessageInterface $message)
     {
         echo $message->getBody();
-        $message->setAck();
+        $message->setNotAck();
     }
 
-
     /**
-     * @return InterfaceQueue
+     * {@inheritdoc}
      */
     public function queue()
     {

@@ -22,13 +22,4 @@ class Driver implements \Queue\Driver
         }
     }
 
-    /**
-     * Gets the name of driver.
-     *
-     * @return string The name of driver.
-     */
-    public function getName()
-    {
-        return self::AMQP;
-    }
 }

@@ -21,14 +21,4 @@ class Driver implements \Queue\Driver
             throw new InMemoryException($e->getMessage(), null, $e);
         }
     }
-
-    /**
-     * Gets the name of driver.
-     *
-     * @return string The name of driver.
-     */
-    public function getName()
-    {
-        return self::IN_MEMORY;
-    }
 }

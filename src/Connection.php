@@ -5,9 +5,11 @@ namespace Queue;
 use Queue\Driver\Connection as DriverConnection;
 use Queue\Driver\MessageInterface;
 
-use Queue\Migration\Entity\AbstractBind as BindEntity;
-use Queue\Migration\Entity\AbstractExchange as ExchangeEntity;
-use Queue\Migration\Entity\AbstractQueue as QueueEntity;
+use Queue\Entity\AbstractBind as BindEntity;
+use Queue\Entity\AbstractExchange as ExchangeEntity;
+use Queue\Entity\AbstractExchange;
+use Queue\Entity\AbstractQueue as QueueEntity;
+use Queue\Entity\AbstractQueue;
 
 class Connection implements DriverConnection
 {
@@ -68,9 +70,9 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function publish(MessageInterface $message, ProducerInterface $producer)
+    public function publish(MessageInterface $message, AbstractExchange $exchange)
     {
-        $this->connect()->publish($message, $producer);
+        $this->connect()->publish($message, $exchange);
     }
 
     /**
@@ -84,17 +86,9 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function fetchOne(ConsumerInterface $consumer)
+    public function fetchOne(AbstractQueue $queue)
     {
-        return $this->connect()->fetchOne($consumer);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getExchange()
-    {
-        return $this->connect()->getExchange();
+        return $this->connect()->fetchOne($queue);
     }
 
     /**
@@ -113,9 +107,9 @@ class Connection implements DriverConnection
         $this->connect()->nack($message);
     }
 
+
     /**
-     * @param QueueEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
     public function createQueue(QueueEntity $queue)
     {
@@ -123,8 +117,7 @@ class Connection implements DriverConnection
     }
 
     /**
-     * @param QueueEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
     public function dropQueue(QueueEntity $queue)
     {
@@ -132,38 +125,34 @@ class Connection implements DriverConnection
     }
 
     /**
-     * @param ExchangeEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function createExchange(ExchangeEntity $queue)
+    public function createExchange(ExchangeEntity $exchange)
     {
-        $this->connect()->createExchange($queue);
+        $this->connect()->createExchange($exchange);
     }
 
     /**
-     * @param ExchangeEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function dropExchange(ExchangeEntity $queue)
+    public function dropExchange(ExchangeEntity $exchange)
     {
-        $this->connect()->dropExchange($queue);
+        $this->connect()->dropExchange($exchange);
     }
 
     /**
-     * @param BindEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function createBind(BindEntity $queue)
+    public function createBind(BindEntity $bind)
     {
-        $this->connect()->createBind($queue);
+        $this->connect()->createBind($bind);
     }
 
     /**
-     * @param BindEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function dropBind(BindEntity $queue)
+    public function dropBind(BindEntity $bind)
     {
-        $this->connect()->dropBind($queue);
+        $this->connect()->dropBind($bind);
     }
 }

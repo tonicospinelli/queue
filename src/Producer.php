@@ -9,7 +9,7 @@ namespace Queue;
 
 use Queue\Driver\MessageInterface;
 
-abstract class Producer extends AbstractQueue implements ProducerInterface
+abstract class Producer extends AbstractProcess implements ProducerInterface
 {
 
     /**
@@ -27,6 +27,6 @@ abstract class Producer extends AbstractQueue implements ProducerInterface
      */
     final public function publish(MessageInterface $message)
     {
-        $this->getConnection()->publish($message, $this);
+        $this->getConnection()->publish($message, $this->exchange());
     }
 }

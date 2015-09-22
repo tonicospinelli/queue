@@ -8,7 +8,8 @@
 namespace Queue;
 
 
-use Queue\Driver\Connection as DriverConnection;
+use Queue\Entity\InterfaceExchange;
+use QueueTest\Mocks\Entity\ExchangeRetryEntityFake;
 
 final class ProducerRetry extends Producer
 {
@@ -19,6 +20,14 @@ final class ProducerRetry extends Producer
     protected  $consumer;
 
     /**
+     * @return InterfaceExchange
+     */
+    public function exchange()
+    {
+        return new ExchangeRetryEntityFake();
+    }
+
+    /**
      * @param Consumer $consumer
      */
     public function __construct(Consumer $consumer)
@@ -26,26 +35,5 @@ final class ProducerRetry extends Producer
         $this->consumer = $consumer;
         parent::__construct($consumer->getConnection());
     }
-
-    public function getWorkingQueueName()
-    {
-        // TODO: Improvement this when 'Routing keys' became ready
-        return $this->consumer->getWorkingQueueName().self::RETRY_SUFFIX;
-    }
-
-    public function getWorkingExchangeName()
-    {
-        // TODO: Improvement this when 'Routing keys' became ready
-        return $this->consumer->getWorkingExchangeName().self::RETRY_SUFFIX;
-    }
-
-    public function getQueueArguments()
-    {
-        return array(
-            'x-message-ttl' => array('I', $this->consumer->getTimeToLiveInMilliseconds()),
-            'x-dead-letter-exchange' => array('S', $this->consumer->getWorkingExchangeName())
-        );
-    }
-
 
 }
