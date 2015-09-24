@@ -1,6 +1,6 @@
 <?php
 
-namespace QueueTest\Fake;
+namespace QueueTest\Mocks\Producer;
 
 use Queue\Entity\InterfaceExchange;
 use Queue\Producer;
@@ -12,7 +12,7 @@ use QueueTest\Mocks\Entity\ExchangeEntityFake;
  *
  */
 
-class ProducerFake extends Producer
+class ProducerMock extends Producer
 {
     /**
      * @return InterfaceExchange
