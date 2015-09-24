@@ -1,6 +1,6 @@
 <?php
 
-namespace QueueTest\Fake;
+namespace QueueTest\Mocks\Consumer;
 
 use Queue\Consumer;
 use Queue\Driver\MessageInterface;

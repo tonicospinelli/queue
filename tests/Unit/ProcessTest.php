@@ -10,8 +10,8 @@ namespace QueueTest\Unit;
 
 use Queue\Driver\Connection;
 use QueueTest\Fake\ConnectionFake;
-use QueueTest\Fake\ConsumerFake;
 use QueueTest\Mocks\Producer\ProducerMock;
+use QueueTest\Mocks\Consumer\ConsumerFake;
 use QueueTest\Mocks\Consumer\ConsumerMockWithRetry;
 use QueueTest\Mocks\Consumer\ConsumerFakeMessage;
 use QueueTest\Mocks\Consumer\ConsumerFakeWithNoAck;
