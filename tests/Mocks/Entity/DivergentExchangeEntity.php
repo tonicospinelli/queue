@@ -8,15 +8,8 @@
 namespace QueueTest\Mocks\Entity;
 
 
-use Queue\Entity\AbstractExchange;
-
-class TargetExchangeEntityFake extends AbstractExchange
+class DivergentExchangeEntity extends ExchangeEntity
 {
-    public function getExchangeName()
-    {
-        return 'migration.queue.target.test';
-    }
-
     public function getType()
     {
         return self::TYPE_DIRECT;

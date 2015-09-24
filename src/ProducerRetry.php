@@ -9,7 +9,7 @@ namespace Queue;
 
 
 use Queue\Entity\InterfaceExchange;
-use QueueTest\Mocks\Entity\ExchangeRetryEntityFake;
+use QueueTest\Mocks\Entity\ExchangeRetryEntity;
 
 final class ProducerRetry extends Producer
 {
@@ -24,7 +24,7 @@ final class ProducerRetry extends Producer
      */
     public function exchange()
     {
-        return new ExchangeRetryEntityFake();
+        return new ExchangeRetryEntity();
     }
 
     /**

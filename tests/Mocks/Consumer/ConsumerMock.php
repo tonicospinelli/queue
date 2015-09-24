@@ -7,7 +7,7 @@ use Queue\Driver\MessageInterface;
 use Queue\Entity\InterfaceQueue;
 use Queue\Exception\QueueException;
 use Queue\ExchangeInterface;
-use QueueTest\Mocks\Entity\QueueEntityFake;
+use QueueTest\Mocks\Entity\QueueEntity;
 
 /**
  * @author Marco.Souza<marco.souza@tricae.com.br>
@@ -31,6 +31,6 @@ class ConsumerMock extends Consumer
      */
     public function queue()
     {
-        return new QueueEntityFake();
+        return new QueueEntity();
     }
 }

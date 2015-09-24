@@ -10,7 +10,7 @@ namespace QueueTest\Mocks\Consumer;
 
 use Queue\Consumer;
 use Queue\Driver\MessageInterface;
-use QueueTest\Mocks\Entity\QueueEntityFake;
+use QueueTest\Mocks\Entity\QueueEntity;
 
 class ConsumerMockMessage extends Consumer
 {
@@ -37,7 +37,7 @@ class ConsumerMockMessage extends Consumer
      */
     public function queue()
     {
-        return new QueueEntityFake();
+        return new QueueEntity();
     }
 
 

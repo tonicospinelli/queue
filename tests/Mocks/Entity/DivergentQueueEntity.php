@@ -8,7 +8,7 @@
 namespace QueueTest\Mocks\Entity;
 
 
-class DivergentQueueEntityFake extends QueueEntityFake
+class DivergentQueueEntity extends QueueEntity
 {
     protected $durable = self::QUEUE_NOT_DURABLE;
 }

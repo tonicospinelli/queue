@@ -10,8 +10,8 @@ namespace QueueTest\Unit\Driver;
 
 
 use QueueTest\Fake\ConnectionFake;
-use QueueTest\Mocks\Entity\ExchangeEntityFake;
-use QueueTest\Mocks\Entity\QueueEntityFake;
+use QueueTest\Mocks\Entity\ExchangeEntity;
+use QueueTest\Mocks\Entity\QueueEntity;
 
 class InMemoryTest extends \PHPUnit_Framework_TestCase {
 
@@ -27,12 +27,12 @@ class InMemoryTest extends \PHPUnit_Framework_TestCase {
     public function testDropQueue()
     {
         $connect = ConnectionFake::inMemory();
-        $connect->dropQueue(new QueueEntityFake());
+        $connect->dropQueue(new QueueEntity());
     }
 
     public function testDropExchange()
     {
         $connect = ConnectionFake::inMemory();
-        $connect->dropExchange(new ExchangeEntityFake());
+        $connect->dropExchange(new ExchangeEntity());
     }
 }

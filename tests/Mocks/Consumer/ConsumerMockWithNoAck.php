@@ -4,7 +4,7 @@ namespace QueueTest\Mocks\Consumer;
 
 use Queue\Consumer;
 use Queue\Driver\MessageInterface;
-use QueueTest\Mocks\Entity\QueueEntityFake;
+use QueueTest\Mocks\Entity\QueueEntity;
 
 /**
  * @author Marco.Souza<marco.souza@tricae.com.br>
@@ -27,6 +27,6 @@ class ConsumerMockWithNoAck extends Consumer
      */
     public function queue()
     {
-        return new QueueEntityFake();
+        return new QueueEntity();
     }
 }

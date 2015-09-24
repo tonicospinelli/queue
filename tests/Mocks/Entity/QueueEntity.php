@@ -10,7 +10,7 @@ namespace QueueTest\Mocks\Entity;
 
 use Queue\Entity\AbstractQueue;
 
-class QueueEntityFake extends AbstractQueue
+class QueueEntity extends AbstractQueue
 {
     protected $queueArguments = array(
         'x-message-ttl' => array('I', 12000),

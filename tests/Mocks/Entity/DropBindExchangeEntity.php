@@ -9,7 +9,7 @@ namespace QueueTest\Mocks\Entity;
 
 use Queue\Entity\AbstractBindExchange;
 
-class DropBindExchangeEntityFake extends AbstractBindExchange
+class DropBindExchangeEntity extends AbstractBindExchange
 {
 
     protected $invalid = true;
@@ -27,7 +27,7 @@ class DropBindExchangeEntityFake extends AbstractBindExchange
      */
     public function getExchange()
     {
-        return new ExchangeEntityFake();
+        return new ExchangeEntity();
     }
 
     /**
@@ -35,6 +35,6 @@ class DropBindExchangeEntityFake extends AbstractBindExchange
      */
     public function getTargetExchange()
     {
-        return new TargetExchangeEntityFake();
+        return new TargetExchangeEntity();
     }
 }

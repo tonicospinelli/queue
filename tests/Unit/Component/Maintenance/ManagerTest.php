@@ -4,15 +4,15 @@ use Queue\Component\Maintenance\Manager;
 use Queue\Driver\Connection;
 use Queue\Entity\AbstractEntity;
 use QueueTest\Fake\ConnectionFake;
-use QueueTest\Mocks\Entity\BindExchangeEntityFake;
-use QueueTest\Mocks\Entity\BindQueueEntityFake;
-use QueueTest\Mocks\Entity\DivergentExchangeEntityFake;
-use QueueTest\Mocks\Entity\DivergentQueueEntityFake;
-use QueueTest\Mocks\Entity\DropBindExchangeEntityFake;
-use QueueTest\Mocks\Entity\ExchangeEntityFake;
-use QueueTest\Mocks\Entity\ExchangeRetryEntityFake;
-use QueueTest\Mocks\Entity\QueueEntityFake;
-use QueueTest\Mocks\Entity\TargetExchangeEntityFake;
+use QueueTest\Mocks\Entity\BindExchangeEntity;
+use QueueTest\Mocks\Entity\BindQueueEntity;
+use QueueTest\Mocks\Entity\DivergentExchangeEntity;
+use QueueTest\Mocks\Entity\DivergentQueueEntity;
+use QueueTest\Mocks\Entity\DropBindExchangeEntity;
+use QueueTest\Mocks\Entity\ExchangeEntity;
+use QueueTest\Mocks\Entity\ExchangeRetryEntity;
+use QueueTest\Mocks\Entity\QueueEntity;
+use QueueTest\Mocks\Entity\TargetExchangeEntity;
 
 /**
  * @author Marco.Souza<marco.souza@tricae.com.br>
@@ -51,12 +51,12 @@ class ManagerTest extends PHPUnit_Framework_TestCase {
     private static function getEntities()
     {
         return array(
-            new QueueEntityFake(),
-            new ExchangeEntityFake(),
-            new ExchangeRetryEntityFake(),
-            new TargetExchangeEntityFake(),
-            new BindQueueEntityFake(),
-            new DropBindExchangeEntityFake(),
+            new QueueEntity(),
+            new ExchangeEntity(),
+            new ExchangeRetryEntity(),
+            new TargetExchangeEntity(),
+            new BindQueueEntity(),
+            new DropBindExchangeEntity(),
         );
     }
 
@@ -67,7 +67,7 @@ class ManagerTest extends PHPUnit_Framework_TestCase {
     public function testEntitiesUpdate(Connection $connection)
     {
         $this->object->setEntities($this->getEntities());
-        $this->object->addEntity(new BindExchangeEntityFake());
+        $this->object->addEntity(new BindExchangeEntity());
         $this->object->update($connection);
     }
 
@@ -77,8 +77,8 @@ class ManagerTest extends PHPUnit_Framework_TestCase {
      */
     public function testDivergentQueue(Connection $connection)
     {
-        $this->object->addEntity(new QueueEntityFake());
-        $this->object->addEntity(new DivergentQueueEntityFake());
+        $this->object->addEntity(new QueueEntity());
+        $this->object->addEntity(new DivergentQueueEntity());
         $this->object->update($connection);
     }
     /**
@@ -87,8 +87,8 @@ class ManagerTest extends PHPUnit_Framework_TestCase {
      */
     public function testDivergentExchange(Connection $connection)
     {
-        $this->object->addEntity(new ExchangeEntityFake());
-        $this->object->addEntity(new DivergentExchangeEntityFake());
+        $this->object->addEntity(new ExchangeEntity());
+        $this->object->addEntity(new DivergentExchangeEntity());
         $this->object->update($connection);
     }
 

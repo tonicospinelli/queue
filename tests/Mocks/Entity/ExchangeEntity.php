@@ -10,7 +10,7 @@ namespace QueueTest\Mocks\Entity;
 
 use Queue\Entity\AbstractExchange;
 
-class ExchangeEntityFake extends AbstractExchange
+class ExchangeEntity extends AbstractExchange
 {
     public function getExchangeName()
     {

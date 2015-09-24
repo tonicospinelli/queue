@@ -10,7 +10,7 @@ namespace QueueTest\Mocks\Entity;
 use Queue\Entity\AbstractBindQueue;
 use Queue\Entity\AbstractQueue;
 
-class BindQueueEntityFake extends AbstractBindQueue
+class BindQueueEntity extends AbstractBindQueue
 {
 
     /**
@@ -26,7 +26,7 @@ class BindQueueEntityFake extends AbstractBindQueue
      */
     public function getExchange()
     {
-        return new ExchangeEntityFake();
+        return new ExchangeEntity();
     }
 
     /**
@@ -34,7 +34,7 @@ class BindQueueEntityFake extends AbstractBindQueue
      */
     public function getTargetQueue()
     {
-        return new QueueEntityFake();
+        return new QueueEntity();
     }
 
 }

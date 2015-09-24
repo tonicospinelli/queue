@@ -4,7 +4,7 @@ namespace QueueTest\Mocks\Producer;
 
 use Queue\Entity\InterfaceExchange;
 use Queue\Producer;
-use QueueTest\Mocks\Entity\ExchangeEntityFake;
+use QueueTest\Mocks\Entity\ExchangeEntity;
 
 /**
  * @author Marco.Souza<marco.souza@tricae.com.br>
@@ -19,7 +19,7 @@ class ProducerMock extends Producer
      */
     public function exchange()
     {
-        return new ExchangeEntityFake();
+        return new ExchangeEntity();
     }
 
 }

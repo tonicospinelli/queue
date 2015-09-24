@@ -12,7 +12,7 @@ use Queue\Driver\MessageInterface;
 use Queue\Entity\AbstractQueue;
 use Queue\Exception\RetryQueueException;
 use Queue\ExchangeInterface;
-use QueueTest\Mocks\Entity\QueueEntityFake;
+use QueueTest\Mocks\Entity\QueueEntity;
 
 class ConsumerMockWithRetry extends Consumer
 {
@@ -31,6 +31,6 @@ class ConsumerMockWithRetry extends Consumer
      */
     public function queue()
     {
-        return new QueueEntityFake();
+        return new QueueEntity();
     }
 }
