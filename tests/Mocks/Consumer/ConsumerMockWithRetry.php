@@ -5,7 +5,7 @@
  *
  */
 
-namespace QueueTest\Fake;
+namespace QueueTest\Mocks\Consumer;
 
 use Queue\Consumer;
 use Queue\Driver\MessageInterface;
@@ -14,7 +14,7 @@ use Queue\Exception\RetryQueueException;
 use Queue\ExchangeInterface;
 use QueueTest\Mocks\Entity\QueueEntityFake;
 
-class ConsumerFakeWithRetry extends Consumer
+class ConsumerMockWithRetry extends Consumer
 {
     /**
      * @param MessageInterface $message

@@ -11,8 +11,8 @@ namespace QueueTest\Unit;
 use Queue\Driver\Connection;
 use QueueTest\Fake\ConnectionFake;
 use QueueTest\Fake\ConsumerFake;
-use QueueTest\Fake\ConsumerFakeWithRetry;
 use QueueTest\Mocks\Producer\ProducerMock;
+use QueueTest\Mocks\Consumer\ConsumerMockWithRetry;
 use QueueTest\Mocks\Consumer\ConsumerFakeMessage;
 use QueueTest\Mocks\Consumer\ConsumerFakeWithNoAck;
 
@@ -61,7 +61,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $message = $producer->prepare('');
         $producer->publish($message);
 
-        $consumer = new ConsumerFakeWithRetry($connection, ConsumerFake::NOT_PERSISTENT);
+        $consumer = new ConsumerMockWithRetry($connection, ConsumerFake::NOT_PERSISTENT);
         $consumer->consume();
     }
 
