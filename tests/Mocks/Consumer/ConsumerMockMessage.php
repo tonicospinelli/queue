@@ -1,17 +1,18 @@
 <?php
+/**
+ * @author Marco.Souza<marco.souza@tricae.com.br>
+ * @since 2015.09.22
+ *
+ */
 
 namespace QueueTest\Mocks\Consumer;
+
 
 use Queue\Consumer;
 use Queue\Driver\MessageInterface;
 use QueueTest\Mocks\Entity\QueueEntityFake;
 
-/**
- * @author Marco.Souza<marco.souza@tricae.com.br>
- * @since 2015.08.28
- *
- */
-class ConsumerFakeWithNoAck extends Consumer
+class ConsumerMockMessage extends Consumer
 {
     /**
      * {@inheritdoc}
@@ -19,7 +20,16 @@ class ConsumerFakeWithNoAck extends Consumer
     public function process(MessageInterface $message)
     {
         echo $message->getBody();
+        $message->setAck();
         $message->setNotAck();
+        $message->setRequeue();
+        $message->setRequeue(false);
+        $message->getId();
+        $message->getProperties();
+        $message->isAck();
+        $message->isNotAck();
+        $message->isRequeue();
+
     }
 
     /**
@@ -29,4 +39,6 @@ class ConsumerFakeWithNoAck extends Consumer
     {
         return new QueueEntityFake();
     }
-}
+
+
+} 

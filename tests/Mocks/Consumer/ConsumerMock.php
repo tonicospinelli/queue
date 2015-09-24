@@ -14,7 +14,7 @@ use QueueTest\Mocks\Entity\QueueEntityFake;
  * @since 2015.08.28
  *
  */
-class ConsumerFake extends Consumer
+class ConsumerMock extends Consumer
 {
     /**
      * {@inheritdoc}

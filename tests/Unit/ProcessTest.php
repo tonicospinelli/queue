@@ -11,10 +11,10 @@ namespace QueueTest\Unit;
 use Queue\Driver\Connection;
 use QueueTest\Fake\ConnectionFake;
 use QueueTest\Mocks\Producer\ProducerMock;
-use QueueTest\Mocks\Consumer\ConsumerFake;
+use QueueTest\Mocks\Consumer\ConsumerMock;
 use QueueTest\Mocks\Consumer\ConsumerMockWithRetry;
-use QueueTest\Mocks\Consumer\ConsumerFakeMessage;
-use QueueTest\Mocks\Consumer\ConsumerFakeWithNoAck;
+use QueueTest\Mocks\Consumer\ConsumerMockMessage;
+use QueueTest\Mocks\Consumer\ConsumerMockWithNoAck;
 
 class ProcessTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,7 +29,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $message = $producer->prepare($messageTxt);
         $producer->publish($message);
 
-        $consumer = new ConsumerFake($connection, ConsumerFake::NOT_PERSISTENT);
+        $consumer = new ConsumerMock($connection, ConsumerMock::NOT_PERSISTENT);
         $consumer->consume();
         $this->expectOutputString($messageTxt);
     }
@@ -45,7 +45,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $message = $producer->prepare($messageTxt);
         $producer->publish($message);
 
-        $consumer = new ConsumerFakeWithNoAck($connection, ConsumerFake::NOT_PERSISTENT);
+        $consumer = new ConsumerMockWithNoAck($connection, ConsumerMock::NOT_PERSISTENT);
         $consumer->consume();
         $this->expectOutputString($messageTxt);
     }
@@ -61,7 +61,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $message = $producer->prepare('');
         $producer->publish($message);
 
-        $consumer = new ConsumerMockWithRetry($connection, ConsumerFake::NOT_PERSISTENT);
+        $consumer = new ConsumerMockWithRetry($connection, ConsumerMock::NOT_PERSISTENT);
         $consumer->consume();
     }
 
@@ -75,7 +75,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $message = $producer->prepare('');
         $producer->publish($message);
 
-        $consumer = new ConsumerFakeMessage($connection, ConsumerFake::NOT_PERSISTENT);
+        $consumer = new ConsumerMockMessage($connection, ConsumerMock::NOT_PERSISTENT);
         $consumer->consume();
     }
 
