@@ -29,7 +29,7 @@ class ManagerTest extends PHPUnit_Framework_TestCase {
 
     public function setUp()
     {
-        $this->object = new Manager();
+        $this->object = new Manager(true);
     }
 
     public function tearDown()
@@ -40,7 +40,7 @@ class ManagerTest extends PHPUnit_Framework_TestCase {
     public static function tearDownAfterClass()
     {
         // Only to Working With correctly Queues
-        $manager = new Manager();
+        $manager = new Manager(true);
         $manager->setEntities(self::getEntities());
         $manager->update(ConnectionFake::amqp());
     }
@@ -69,6 +69,27 @@ class ManagerTest extends PHPUnit_Framework_TestCase {
         $this->object->setEntities($this->getEntities());
         $this->object->addEntity(new BindExchangeEntity());
         $this->object->update($connection);
+    }
+
+    /**
+     * @expectedException \Queue\Driver\Exception\DivergentEntityException
+     */
+    public function testDivergentQueueWithException()
+    {
+        $manager = new Manager();
+        $manager->addEntity(new QueueEntity());
+        $manager->addEntity(new DivergentQueueEntity());
+        $manager->update(ConnectionFake::amqp());
+    }
+    /**
+     * @expectedException \Queue\Driver\Exception\DivergentEntityException
+     */
+    public function testDivergentExchangeWithException()
+    {
+        $manager = new Manager();
+        $manager->addEntity(new ExchangeEntity());
+        $manager->addEntity(new DivergentExchangeEntity());
+        $manager->update(ConnectionFake::amqp());
     }
 
     /**

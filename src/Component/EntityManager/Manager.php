@@ -33,6 +33,19 @@ class Manager
     private $exchanges = array();
 
     /**
+     * @var bool
+     */
+    private $recreate = false;
+
+    /**
+     * @param bool $recreateOnError
+     */
+    public function __construct($recreateOnError = false)
+    {
+        $this->recreate = $recreateOnError;
+    }
+
+    /**
      * @param AbstractEntity $entity
      */
     public function addEntity(AbstractEntity $entity)
@@ -57,6 +70,9 @@ class Manager
         }
     }
 
+    /**
+     *
+     */
     private function resetEntities()
     {
         $this->binds = array();
@@ -80,26 +96,50 @@ class Manager
         }
     }
 
+    /**
+     * @param Connection $connection
+     * @param AbstractQueue $queue
+     * @throws DivergentEntityException
+     * @throws \Exception
+     */
     private function updateQueue(Connection $connection, AbstractQueue $queue)
     {
         try {
             $connection->createQueue($queue);
         } catch (DivergentEntityException $e) {
-            $connection->dropQueue($queue);
-            $connection->createQueue($queue);
+            if ($this->recreate) {
+                $connection->dropQueue($queue);
+                $connection->createQueue($queue);
+            } else {
+                throw $e;
+            }
         }
     }
 
+    /**
+     * @param Connection $connection
+     * @param AbstractExchange $exchange
+     * @throws DivergentEntityException
+     * @throws \Exception
+     */
     private function updateExchange(Connection $connection, AbstractExchange $exchange)
     {
         try {
             $connection->createExchange($exchange);
         } catch (DivergentEntityException $e) {
-            $connection->dropExchange($exchange);
-            $connection->createExchange($exchange);
+            if ($this->recreate) {
+                $connection->dropExchange($exchange);
+                $connection->createExchange($exchange);
+            } else {
+                throw $e;
+            }
         }
     }
 
+    /**
+     * @param Connection $connection
+     * @param AbstractBind $bind
+     */
     private function updateBind(Connection $connection, AbstractBind $bind)
     {
         if ($bind->isDeprecated()) {
