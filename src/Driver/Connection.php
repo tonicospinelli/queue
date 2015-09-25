@@ -8,8 +8,11 @@
 namespace Queue\Driver;
 
 use Queue\ConsumerInterface;
+use Queue\Driver\Exception\DivergentEntityException;
 use Queue\Exchange;
-use Queue\ProducerInterface;
+use Queue\Entity\AbstractExchange;
+use Queue\Entity\AbstractQueue;
+use Queue\Entity\AbstractBind;
 
 interface Connection
 {
@@ -21,10 +24,10 @@ interface Connection
 
     /**
      * @param MessageInterface $message
-     * @param ProducerInterface $producer
+     * @param AbstractExchange $producer
      * @return void
      */
-    public function publish(MessageInterface $message, ProducerInterface $producer);
+    public function publish(MessageInterface $message, AbstractExchange $exchange);
 
     /**
      * @param string $message
@@ -35,15 +38,10 @@ interface Connection
     public function prepare($message, array $properties = array(), $id = null);
 
     /**
-     * @param ConsumerInterface $consumer
+     * @param AbstractQueue $queue
      * @return MessageInterface|null
      */
-    public function fetchOne(ConsumerInterface $consumer);
-
-    /**
-     * @return Exchange
-     */
-    public function getExchange();
+    public function fetchOne(AbstractQueue $queue);
 
     /**
      * @param MessageInterface $message
@@ -56,4 +54,46 @@ interface Connection
      * @return void
      */
     public function nack(MessageInterface $message);
+
+    /**
+     * @param AbstractQueue $queue
+     * @throws DivergentEntityException
+     * @return void
+     */
+    public function createQueue(AbstractQueue $queue);
+
+    /**
+     * @param AbstractQueue $queue
+     * @return void
+     */
+    public function dropQueue(AbstractQueue $queue);
+
+
+    /**
+     * @param AbstractExchange $exchange
+     * @throws DivergentEntityException
+     * @return void
+     */
+    public function createExchange(AbstractExchange $exchange);
+
+    /**
+     * @param AbstractExchange $exchange
+     * @return void
+     */
+    public function dropExchange(AbstractExchange $exchange);
+
+
+    /**
+     * @param AbstractBind $bind
+     * @return void
+     */
+    public function createBind(AbstractBind $bind);
+
+    /**
+     * @param AbstractBind $bind
+     * @return void
+     */
+    public function dropBind(AbstractBind $bind);
+
+
 }

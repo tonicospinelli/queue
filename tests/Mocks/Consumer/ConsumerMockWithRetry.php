@@ -5,26 +5,17 @@
  *
  */
 
-namespace QueueTest\Fake;
+namespace QueueTest\Mocks\Consumer;
 
 use Queue\Consumer;
 use Queue\Driver\MessageInterface;
+use Queue\Entity\AbstractQueue;
 use Queue\Exception\RetryQueueException;
 use Queue\ExchangeInterface;
+use QueueTest\Mocks\Entity\QueueEntity;
 
-class ConsumerFakeWithRetry extends Consumer
+class ConsumerMockWithRetry extends Consumer
 {
-
-    public function getWorkingQueueName()
-    {
-        return 'test.queue.fake';
-    }
-
-    public function getWorkingExchangeName()
-    {
-        return $this->getWorkingQueueName();
-    }
-
     /**
      * @param MessageInterface $message
      * @throws RetryQueueException
@@ -34,10 +25,12 @@ class ConsumerFakeWithRetry extends Consumer
     {
         throw new RetryQueueException();
     }
-    public function getExchange()
+
+    /**
+     * @return AbstractQueue
+     */
+    public function queue()
     {
-        $exchange = parent::getExchange();
-        $exchange->setAutoDelete(ExchangeInterface::AMQP_AUTO_DELETE_FALSE);
-        return $exchange;
+        return new QueueEntity();
     }
 }

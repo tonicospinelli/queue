@@ -42,16 +42,6 @@ class Message implements MessageInterface
         return $this->properties;
     }
 
-    public function getProperty($name)
-    {
-        return $this->properties[$name];
-    }
-
-    public function hasProperty($name)
-    {
-        return isset($this->properties[$name]);
-    }
-
     /**
      * @param bool $confirm
      * @return void

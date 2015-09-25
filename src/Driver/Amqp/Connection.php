@@ -2,13 +2,23 @@
 
 namespace Queue\Driver\Amqp;
 
+use Queue\Driver\Exception\BindException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
-use Queue\AbstractQueue;
+use PhpAmqpLib\Exception\AMQPProtocolChannelException;
+use Queue\AbstractProcess;
 use Queue\ConfigurationInterface;
 use Queue\ConsumerInterface;
+use Queue\Driver\Exception\DivergentEntityException;
 use Queue\Driver\MessageInterface;
+use Queue\Entity\AbstractBindExchange;
+use Queue\Entity\AbstractBindQueue;
+use Queue\Entity\AbstractExchange;
+use Queue\Entity\AbstractQueue;
 use Queue\InterfaceQueue;
+use Queue\Entity\AbstractBind as BindEntity;
+use Queue\Entity\AbstractExchange as ExchangeEntity;
+use Queue\Entity\AbstractQueue as QueueEntity;
 use Queue\ProducerInterface;
 
 class Connection implements \Queue\Driver\Connection
@@ -61,23 +71,19 @@ class Connection implements \Queue\Driver\Connection
     /**
      * {@inheritdoc}
      */
-    public function publish(MessageInterface $message, ProducerInterface $producer)
+    public function publish(MessageInterface $message, AbstractExchange $exchange)
     {
-        $this->declareQueue($producer);
         $channel = $this->getChannel();
-        $channel->basic_publish(Message::createAMQPMessage($message), $producer->getWorkingExchangeName());
+        $channel->basic_publish(Message::createAMQPMessage($message), $exchange->getExchangeName());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetchOne(ConsumerInterface $consumer)
+    public function fetchOne(AbstractQueue $queue)
     {
-        $this->declareQueue($consumer);
         $channel = $this->getChannel();
-
-        $message = $channel->basic_get($consumer->getWorkingQueueName());
-
+        $message = $channel->basic_get($queue->getQueueName());
         if (!$message) {
             return null;
         }
@@ -96,41 +102,6 @@ class Connection implements \Queue\Driver\Connection
         return $this->channel;
     }
 
-    protected function declareQueue(InterfaceQueue $queue)
-    {
-        $channel = $this->getChannel();
-        $channel->queue_declare(
-            $queue->getWorkingQueueName(),
-            AbstractQueue::QUEUE_NOT_PASSIVE,
-            AbstractQueue::QUEUE_DURABLE,
-            AbstractQueue::QUEUE_NOT_EXCLUSIVE,
-            AbstractQueue::QUEUE_NOT_AUTO_DELETE,
-            AbstractQueue::QUEUE_NO_WAIT,
-            $queue->getQueueArguments()
-        );
-        $exchange = $queue->getExchange();
-        $channel->exchange_declare(
-            $queue->getWorkingExchangeName(),
-            $exchange->getChannel(),
-            $exchange->isPassive(),
-            $exchange->isDurable(),
-            $exchange->isAutoDelete(),
-            $exchange->isInternal(),
-            $exchange->isNoWait(),
-            $exchange->getArguments(),
-            $exchange->getTickets()
-        );
-        $channel->queue_bind($queue->getWorkingQueueName(), $queue->getWorkingExchangeName());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getExchange()
-    {
-        return new AmqpExchange();
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -145,5 +116,86 @@ class Connection implements \Queue\Driver\Connection
     public function nack(MessageInterface $message)
     {
         $this->getChannel()->basic_nack($message->getId(), false, $message->isRequeue());
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createQueue(QueueEntity $queue)
+    {
+        $channel = $this->connection->channel();
+        try {
+            $channel->queue_declare($queue->getQueueName(), false, $queue->isDurable(), false, $queue->isAutoDelete(), false, $queue->getQueueArguments());
+        } catch (AMQPProtocolChannelException $amqpException) {
+            throw new DivergentEntityException('This Queue is different from servers', 0, $amqpException);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dropQueue(QueueEntity $queue)
+    {
+        $channel = $this->connection->channel();
+        $channel->queue_delete($queue->getQueueName());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createExchange(ExchangeEntity $exchange)
+    {
+        $channel = $this->connection->channel();
+        try {
+            $channel->exchange_declare($exchange->getExchangeName(), $exchange->getType(), false, $exchange->isDurable(), $exchange->isAutoDelete(), $exchange->isInternal() , false, $exchange->getExchangeArguments());
+        } catch (AMQPProtocolChannelException $amqpException) {
+            throw new DivergentEntityException('This Exchange is different from servers', 0, $amqpException);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dropExchange(ExchangeEntity $exchange)
+    {
+        $channel = $this->connection->channel();
+        $channel->exchange_delete($exchange->getExchangeName());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createBind(BindEntity $bind)
+    {
+        $channel = $this->connection->channel();
+        $exchangeName = $bind->getExchange()->getExchangeName();
+        $routingKey = $bind->getRoutingKey();
+        try {
+            if($bind instanceof AbstractBindQueue) {
+                $channel->queue_bind($bind->getTargetQueue()->getQueueName(), $exchangeName, $routingKey);
+            } elseif ($bind instanceof AbstractBindExchange) {
+                $channel->exchange_bind($bind->getTargetExchange()->getExchangeName(), $exchangeName, $routingKey);
+            }
+        } catch (AMQPProtocolChannelException $amqpException) {
+            if ( $amqpException->getCode() == 404) {
+                throw new BindException('Queue or Exchange not exist', 404, $amqpException);
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dropBind(BindEntity $bind)
+    {
+        $channel = $this->connection->channel();
+        $exchangeName = $bind->getExchange()->getExchangeName();
+        $routingKey = $bind->getRoutingKey();
+        if($bind instanceof AbstractBindQueue) {
+            $channel->queue_unbind($bind->getTargetQueue()->getQueueName(), $exchangeName, $routingKey);
+        } elseif ($bind instanceof AbstractBindExchange) {
+            $channel->exchange_unbind($bind->getTargetExchange()->getExchangeName(), $exchangeName, $routingKey);
+        }
     }
 }

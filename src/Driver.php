@@ -25,10 +25,4 @@ interface Driver
      */
     public function connect(ConfigurationInterface $configuration);
 
-    /**
-     * Gets the name of driver.
-     *
-     * @return string The name of driver.
-     */
-    public function getName();
 }

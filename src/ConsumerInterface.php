@@ -2,10 +2,11 @@
 
 namespace Queue;
 
+use Queue\Entity\AbstractQueue;
 use Queue\Exception\RetryQueueException;
 use Queue\Driver\MessageInterface;
 
-interface ConsumerInterface extends InterfaceQueue
+interface ConsumerInterface
 {
     const PERSISTENT = true;
     const NOT_PERSISTENT = false;
@@ -21,4 +22,10 @@ interface ConsumerInterface extends InterfaceQueue
      * @return void
      */
     public function process(MessageInterface $message);
+
+
+    /**
+     * @return AbstractQueue
+     */
+    public function queue();
 }

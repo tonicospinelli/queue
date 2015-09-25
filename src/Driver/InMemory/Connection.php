@@ -2,12 +2,13 @@
 
 namespace Queue\Driver\InMemory;
 
-use Driver\InMemory\InMemoryExchange;
 use Queue\ConfigurationInterface;
-use Queue\ConsumerInterface;
 use Queue\Driver\MessageInterface;
-use Queue\Exception\NotImplementedException;
-use Queue\ProducerInterface;
+use Queue\Entity\AbstractExchange;
+use Queue\Entity\AbstractQueue;
+use Queue\Entity\AbstractBind as BindEntity;
+use Queue\Entity\AbstractExchange as ExchangeEntity;
+use Queue\Entity\AbstractQueue as QueueEntity;
 
 class Connection implements \Queue\Driver\Connection
 {
@@ -17,7 +18,11 @@ class Connection implements \Queue\Driver\Connection
     protected $connection;
 
     public function __construct(ConfigurationInterface $configuration)
-    {}
+    {
+        $throw = $configuration->getOption('forceException', false);
+        if($throw)
+            throw new \Exception();
+    }
 
     /**
      * {@inheritdoc}
@@ -36,9 +41,9 @@ class Connection implements \Queue\Driver\Connection
     /**
      * {@inheritdoc}
      */
-    public function publish(MessageInterface $message, ProducerInterface $producer)
+    public function publish(MessageInterface $message, AbstractExchange $exchange)
     {
-        $connection = $this->getConnection($producer->getWorkingQueueName());
+        $connection = $this->getConnection($exchange->getExchangeName());
         msg_send($connection, 1 , $message->getBody());
     }
 
@@ -53,9 +58,9 @@ class Connection implements \Queue\Driver\Connection
     /**
      * {@inheritdoc}
      */
-    public function fetchOne(ConsumerInterface $consumer)
+    public function fetchOne(AbstractQueue $queue)
     {
-        $connection = $this->getConnection($consumer->getWorkingQueueName());
+        $connection = $this->getConnection($queue->getQueueName());
         $msg_type = NULL;
         $msg = NULL;
         $max_msg_size = 512;
@@ -64,14 +69,6 @@ class Connection implements \Queue\Driver\Connection
             return null;
         }
         return $this->prepare($message);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getExchange()
-    {
-        return new InMemoryExchange();
     }
 
     /**
@@ -90,4 +87,61 @@ class Connection implements \Queue\Driver\Connection
     public function nack(MessageInterface $message)
     {
     }
+
+
+
+    /**
+     * @param QueueEntity $queue
+     * @return void
+     */
+    public function createQueue(QueueEntity $queue)
+    {
+        // TODO: Implement createQueue() method.
+    }
+
+    /**
+     * @param QueueEntity $queue
+     * @return void
+     */
+    public function dropQueue(QueueEntity $queue)
+    {
+        // TODO: Implement dropQueue() method.
+    }
+
+    /**
+     * @param ExchangeEntity $queue
+     * @return void
+     */
+    public function createExchange(ExchangeEntity $queue)
+    {
+        // TODO: Implement createExchange() method.
+    }
+
+    /**
+     * @param ExchangeEntity $queue
+     * @return void
+     */
+    public function dropExchange(ExchangeEntity $queue)
+    {
+        // TODO: Implement dropExchange() method.
+    }
+
+    /**
+     * @param BindEntity $queue
+     * @return void
+     */
+    public function createBind(BindEntity $queue)
+    {
+        // TODO: Implement createBind() method.
+    }
+
+    /**
+     * @param BindEntity $queue
+     * @return void
+     */
+    public function dropBind(BindEntity $queue)
+    {
+        // TODO: Implement dropBind() method.
+    }
 }
+

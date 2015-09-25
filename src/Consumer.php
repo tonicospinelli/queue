@@ -6,7 +6,7 @@ use Queue\Driver\Connection as DriverConnection;
 use Queue\Driver\MessageInterface;
 use Queue\Exception\RetryQueueException;
 
-abstract class Consumer extends AbstractQueue implements ConsumerInterface
+abstract class Consumer extends AbstractProcess implements ConsumerInterface
 {
     /**
      * @var bool
@@ -32,7 +32,7 @@ abstract class Consumer extends AbstractQueue implements ConsumerInterface
      */
     final public function consume()
     {
-        while (($message = $this->getConnection()->fetchOne($this)) !== null || $this->isPersistent()) {
+        while (($message = $this->getConnection()->fetchOne($this->queue())) !== null || $this->isPersistent()) {
             if ($message instanceof MessageInterface) {
                 try {
                     $this->process($message);

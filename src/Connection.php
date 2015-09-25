@@ -5,6 +5,12 @@ namespace Queue;
 use Queue\Driver\Connection as DriverConnection;
 use Queue\Driver\MessageInterface;
 
+use Queue\Entity\AbstractBind as BindEntity;
+use Queue\Entity\AbstractExchange as ExchangeEntity;
+use Queue\Entity\AbstractExchange;
+use Queue\Entity\AbstractQueue as QueueEntity;
+use Queue\Entity\AbstractQueue;
+
 class Connection implements DriverConnection
 {
     /**
@@ -64,9 +70,9 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function publish(MessageInterface $message, ProducerInterface $producer)
+    public function publish(MessageInterface $message, AbstractExchange $exchange)
     {
-        $this->connect()->publish($message, $producer);
+        $this->connect()->publish($message, $exchange);
     }
 
     /**
@@ -80,17 +86,9 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function fetchOne(ConsumerInterface $consumer)
+    public function fetchOne(AbstractQueue $queue)
     {
-        return $this->connect()->fetchOne($consumer);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getExchange()
-    {
-        return $this->connect()->getExchange();
+        return $this->connect()->fetchOne($queue);
     }
 
     /**
@@ -107,5 +105,54 @@ class Connection implements DriverConnection
     public function nack(MessageInterface $message)
     {
         $this->connect()->nack($message);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createQueue(QueueEntity $queue)
+    {
+        $this->connect()->createQueue($queue);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dropQueue(QueueEntity $queue)
+    {
+        $this->connect()->dropQueue($queue);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createExchange(ExchangeEntity $exchange)
+    {
+        $this->connect()->createExchange($exchange);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dropExchange(ExchangeEntity $exchange)
+    {
+        $this->connect()->dropExchange($exchange);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createBind(BindEntity $bind)
+    {
+        $this->connect()->createBind($bind);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dropBind(BindEntity $bind)
+    {
+        $this->connect()->dropBind($bind);
     }
 }

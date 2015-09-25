@@ -8,12 +8,19 @@
 namespace Queue;
 
 use Queue\Driver\MessageInterface;
+use Queue\Entity\InterfaceExchange;
 
-interface ProducerInterface extends InterfaceQueue
+interface ProducerInterface
 {
     /**
      * @param MessageInterface $message
      * @return void
      */
     public function publish(MessageInterface $message);
+
+    /**
+     * @return InterfaceExchange
+     */
+    public function exchange();
+
 }
