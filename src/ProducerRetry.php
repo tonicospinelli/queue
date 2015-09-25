@@ -8,32 +8,25 @@
 namespace Queue;
 
 
+use Queue\Driver\Connection as DriverConnection;
+use Queue\Entity\AbstractExchange;
 use Queue\Entity\InterfaceExchange;
 use QueueTest\Mocks\Entity\ExchangeRetryEntity;
 
 final class ProducerRetry extends Producer
 {
-    const RETRY_SUFFIX = '.retry';
-    /**
-     * @var Consumer
-     */
-    protected  $consumer;
+    protected $exchange;
 
-    /**
-     * @return InterfaceExchange
-     */
     public function exchange()
     {
-        return new ExchangeRetryEntity();
+        return $this->exchange;
     }
 
-    /**
-     * @param Consumer $consumer
-     */
-    public function __construct(Consumer $consumer)
+    public function __construct(DriverConnection $connection, AbstractExchange $exchange)
     {
-        $this->consumer = $consumer;
-        parent::__construct($consumer->getConnection());
+        $this->exchange = $exchange;
+        parent::__construct($connection);
     }
+
 
 }

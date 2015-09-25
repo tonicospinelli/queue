@@ -11,7 +11,7 @@ use Queue\Consumer;
 use Queue\Driver\MessageInterface;
 use Queue\Entity\AbstractQueue;
 use Queue\Exception\RetryQueueException;
-use Queue\ExchangeInterface;
+use QueueTest\Mocks\Entity\ExchangeRetryEntity;
 use QueueTest\Mocks\Entity\QueueEntity;
 
 class ConsumerMockWithRetry extends Consumer
@@ -23,7 +23,7 @@ class ConsumerMockWithRetry extends Consumer
      */
     public function process(MessageInterface $message)
     {
-        throw new RetryQueueException();
+        throw new RetryQueueException(new ExchangeRetryEntity());
     }
 
     /**
