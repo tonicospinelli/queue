@@ -1,6 +1,6 @@
 <?php
 
-use Queue\Component\Maintenance\Manager;
+use Queue\Component\EntityManager\Manager;
 use Queue\Driver\Connection;
 use Queue\Entity\AbstractEntity;
 use QueueTest\Fake\ConnectionFake;
