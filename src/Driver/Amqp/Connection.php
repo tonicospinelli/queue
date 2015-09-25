@@ -128,7 +128,7 @@ class Connection implements \Queue\Driver\Connection
         try {
             $channel->queue_declare($queue->getQueueName(), false, $queue->isDurable(), false, $queue->isAutoDelete(), false, $queue->getQueueArguments());
         } catch (AMQPProtocolChannelException $amqpException) {
-            throw new DivergentEntityException();
+            throw new DivergentEntityException('This Queue is different from servers', 0, $amqpException);
         }
     }
 
@@ -150,7 +150,7 @@ class Connection implements \Queue\Driver\Connection
         try {
             $channel->exchange_declare($exchange->getExchangeName(), $exchange->getType(), false, $exchange->isDurable(), $exchange->isAutoDelete(), $exchange->isInternal() , false, $exchange->getExchangeArguments());
         } catch (AMQPProtocolChannelException $amqpException) {
-            throw new DivergentEntityException();
+            throw new DivergentEntityException('This Exchange is different from servers', 0, $amqpException);
         }
     }
 
