@@ -2,6 +2,7 @@
 
 namespace Queue\Driver\Amqp;
 
+use Queue\Driver\Exception\BindException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Exception\AMQPProtocolChannelException;
@@ -178,19 +179,8 @@ class Connection implements \Queue\Driver\Connection
             }
         } catch (AMQPProtocolChannelException $amqpException) {
             if ( $amqpException->getCode() == 404) {
-                $this->createBindRelationship($bind);
-                $this->createBind($bind);
+                throw new BindException('Queue or Exchange not exist', 404, $amqpException);
             }
-        }
-    }
-
-    private function createBindRelationship(BindEntity $bind)
-    {
-        $bind->getExchange()->update($this);
-        if($bind instanceof AbstractBindQueue) {
-            $bind->getTargetQueue()->update($this);
-        } elseif ($bind instanceof AbstractBindExchange) {
-            $bind->getTargetExchange()->update($this);
         }
     }
 

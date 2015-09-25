@@ -70,19 +70,4 @@ abstract class AbstractExchange extends AbstractEntity implements InterfaceExcha
 
     abstract function getType();
 
-    final protected function execute(DriverConnection $connection)
-    {
-        try {
-            $connection->createExchange($this);
-        } catch (DivergentEntityException $e) {
-            $this->askConfirmation();
-            $connection->dropExchange($this);
-            $connection->createExchange($this);
-        }
-    }
-
-    private function askConfirmation()
-    {
-        echo 'confirm delete current exchange: '.$this->getExchangeName() . PHP_EOL;
-    }
 } 

@@ -24,13 +24,8 @@ abstract class AbstractBind extends AbstractEntity implements InterfaceBind
     abstract function getExchange();
 
 
-    final protected function execute(DriverConnection $connection)
+    public function isDeprecated()
     {
-        if ($this->invalid) {
-            $connection->dropBind($this);
-        } else {
-            $connection->createBind($this);
-        }
+        return $this->invalid;
     }
-
 } 

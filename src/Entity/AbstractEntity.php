@@ -15,19 +15,4 @@ use Queue\Driver\Connection as DriverConnection;
  * @package Queue\Entity
  */
 abstract class AbstractEntity
-{
-
-    /**
-     * @param DriverConnection $connection
-     * @return void
-     */
-    abstract protected function execute(DriverConnection $connection);
-
-    /**
-     * @param DriverConnection $connection
-     */
-    public function update(DriverConnection $connection)
-    {
-        $this->execute($connection);
-    }
-} 
+{}

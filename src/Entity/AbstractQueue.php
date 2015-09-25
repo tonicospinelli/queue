@@ -54,20 +54,4 @@ abstract class AbstractQueue extends AbstractEntity implements InterfaceQueue
 
     abstract function getQueueName();
 
-    final protected function execute(DriverConnection $connection)
-    {
-        try {
-            $connection->createQueue($this);
-        } catch (DivergentEntityException $e) {
-            $this->askConfirmation();
-            $connection->dropQueue($this);
-            $connection->createQueue($this);
-        }
-    }
-
-    private function askConfirmation()
-    {
-        echo 'confirm delete current queue: '.$this->getQueueName() . PHP_EOL;
-    }
-
 }

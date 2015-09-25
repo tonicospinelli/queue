@@ -7,8 +7,6 @@
 
 namespace QueueTest\Unit\Driver;
 
-
-
 use QueueTest\Fake\ConnectionFake;
 use QueueTest\Mocks\Entity\UnusedExchangeBind;
 use QueueTest\Mocks\Entity\UnusedQueueBind;
@@ -24,6 +22,9 @@ class AmqpTest extends \PHPUnit_Framework_TestCase {
         $connect->close();
     }
 
+    /**
+     * @expectedException \Queue\Driver\Exception\BindException
+     */
     public function testBind()
     {
         $connect = ConnectionFake::amqp();

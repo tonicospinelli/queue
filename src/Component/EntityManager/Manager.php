@@ -9,6 +9,7 @@ namespace Queue\Component\EntityManager;
 
 
 use Queue\Driver\Connection;
+use Queue\Driver\Exception\DivergentEntityException;
 use Queue\Entity\AbstractBind;
 use Queue\Entity\AbstractEntity;
 use Queue\Entity\AbstractExchange;
@@ -17,17 +18,17 @@ use Queue\Entity\AbstractQueue;
 class Manager
 {
     /**
-     * @var AbstractEntity[]
+     * @var AbstractBind[]
      */
     private $binds = array();
 
     /**
-     * @var AbstractEntity[]
+     * @var AbstractQueue[]
      */
     private $queues = array();
 
     /**
-     * @var AbstractEntity[]
+     * @var AbstractExchange[]
      */
     private $exchanges = array();
 
@@ -56,26 +57,55 @@ class Manager
         }
     }
 
-    /**
-     * @param Connection $connection
-     */
-    public function update(Connection $connection)
-    {
-        foreach ($this->queues as $entity) {
-            $entity->update($connection);
-        }
-        foreach ($this->exchanges as $entity) {
-            $entity->update($connection);
-        }
-        foreach ($this->binds as $entity) {
-            $entity->update($connection);
-        }
-    }
-
     private function resetEntities()
     {
         $this->binds = array();
         $this->exchanges = array();
         $this->queues = array();
+    }
+
+    /**
+     * @param Connection $connection
+     */
+    public function update(Connection $connection)
+    {
+        foreach ($this->queues as $queue) {
+            $this->updateQueue($connection, $queue);
+        }
+        foreach ($this->exchanges as $exchange) {
+            $this->updateExchange($connection, $exchange);
+        }
+        foreach ($this->binds as $bind) {
+            $this->updateBind($connection,$bind);
+        }
+    }
+
+    private function updateQueue(Connection $connection, AbstractQueue $queue)
+    {
+        try {
+            $connection->createQueue($queue);
+        } catch (DivergentEntityException $e) {
+            $connection->dropQueue($queue);
+            $connection->createQueue($queue);
+        }
+    }
+
+    private function updateExchange(Connection $connection, AbstractExchange $exchange)
+    {
+        try {
+            $connection->createExchange($exchange);
+        } catch (DivergentEntityException $e) {
+            $connection->dropExchange($exchange);
+            $connection->createExchange($exchange);
+        }
+    }
+
+    private function updateBind(Connection $connection, AbstractBind $bind)
+    {
+        if ($bind->isDeprecated()) {
+            $connection->dropBind($bind);
+        } else {
+            $connection->createBind($bind);
+        }
     }
 }
