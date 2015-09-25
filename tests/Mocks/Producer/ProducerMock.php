@@ -2,6 +2,7 @@
 
 namespace QueueTest\Mocks\Producer;
 
+use Queue\Driver\MessageInterface;
 use Queue\Entity\InterfaceExchange;
 use Queue\Producer;
 use QueueTest\Mocks\Entity\ExchangeEntity;
@@ -20,6 +21,17 @@ class ProducerMock extends Producer
     public function exchange()
     {
         return new ExchangeEntity();
+    }
+
+    /**
+     * @param string $message
+     * @return MessageInterface
+     */
+    public function prepare($message)
+    {
+        $message = parent::prepare($message);
+        $message->setRoutingKey('');
+        return $message;
     }
 
 }

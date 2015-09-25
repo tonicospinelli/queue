@@ -57,4 +57,15 @@ interface MessageInterface
      * @return bool
      */
     public function isRequeue();
+
+    /**
+     * @param string $routingKey
+     * @return void
+     */
+    public function setRoutingKey($routingKey = '');
+
+    /**
+     * @return string
+     */
+    public function getRoutingKey();
 }

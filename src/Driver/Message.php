@@ -9,6 +9,7 @@ class Message implements MessageInterface
     use BitwiseFlag;
     private $id;
     private $body;
+    private $routingKey = '';
     private $properties;
 
     public function __construct($body, array $properties = array(), $id = null)
@@ -92,4 +93,22 @@ class Message implements MessageInterface
     {
         return $this->isFlagSet(self::REQUEUE);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setRoutingKey($routingKey = '')
+    {
+        $this->routingKey = $routingKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRoutingKey()
+    {
+        return $this->routingKey;
+    }
+
+
 }

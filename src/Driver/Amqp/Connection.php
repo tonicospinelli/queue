@@ -6,20 +6,16 @@ use Queue\Driver\Exception\BindException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Exception\AMQPProtocolChannelException;
-use Queue\AbstractProcess;
 use Queue\ConfigurationInterface;
-use Queue\ConsumerInterface;
 use Queue\Driver\Exception\DivergentEntityException;
 use Queue\Driver\MessageInterface;
 use Queue\Entity\AbstractBindExchange;
 use Queue\Entity\AbstractBindQueue;
 use Queue\Entity\AbstractExchange;
 use Queue\Entity\AbstractQueue;
-use Queue\InterfaceQueue;
 use Queue\Entity\AbstractBind as BindEntity;
 use Queue\Entity\AbstractExchange as ExchangeEntity;
 use Queue\Entity\AbstractQueue as QueueEntity;
-use Queue\ProducerInterface;
 
 class Connection implements \Queue\Driver\Connection
 {
@@ -74,7 +70,7 @@ class Connection implements \Queue\Driver\Connection
     public function publish(MessageInterface $message, AbstractExchange $exchange)
     {
         $channel = $this->getChannel();
-        $channel->basic_publish(Message::createAMQPMessage($message), $exchange->getExchangeName());
+        $channel->basic_publish(Message::createAMQPMessage($message), $exchange->getExchangeName(), $message->getRoutingKey());
     }
 
     /**
