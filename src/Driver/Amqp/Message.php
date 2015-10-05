@@ -33,8 +33,8 @@ class Message extends DriverMessage implements MessageInterface
      */
     public function renewTimeToLive()
     {
-        if ( isset($this->properties['application_headers']['x-dead'][1][0]['time'][1]) ) {
-            $this->properties['application_headers']['x-dead'][1][0]['time'][1] = (new \DateTime())->getTimestamp();
+        if ( isset($this->properties['application_headers']['x-death']) ) {
+            unset($this->properties['application_headers']['x-death']);
         }
     }
 }
