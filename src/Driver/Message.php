@@ -10,7 +10,7 @@ class Message implements MessageInterface
     private $id;
     private $body;
     private $routingKey = '';
-    private $properties;
+    protected $properties;
 
     public function __construct($body, array $properties = array(), $id = null)
     {
@@ -110,5 +110,10 @@ class Message implements MessageInterface
         return $this->routingKey;
     }
 
+    /**
+     * @return void
+     */
+    public function renewTimeToLive()
+    {}
 
 }

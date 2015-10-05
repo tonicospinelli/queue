@@ -27,4 +27,14 @@ class Message extends DriverMessage implements MessageInterface
     {
         return new AMQPMessage($message->getBody(), $message->getProperties());
     }
+
+    /**
+     * @return void
+     */
+    public function renewTimeToLive()
+    {
+        if ( isset($this->properties['application_headers']['x-dead'][1][0]['time'][1]) ) {
+            $this->properties['application_headers']['x-dead'][1][0]['time'][1] = (new \DateTime())->getTimestamp();
+        }
+    }
 }

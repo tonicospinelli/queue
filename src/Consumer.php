@@ -40,6 +40,7 @@ abstract class Consumer extends AbstractProcess implements ConsumerInterface
                 } catch (RetryQueueException $retryQueue) {
                     $this->handleProcessMessage($message);
                     $producer = new ProducerRetry($this->getConnection(), $retryQueue->getExchange());
+                    $message->renewTimeToLive();
                     $producer->publish($message);
                 }
             }

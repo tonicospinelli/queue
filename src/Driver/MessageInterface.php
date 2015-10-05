@@ -68,4 +68,9 @@ interface MessageInterface
      * @return string
      */
     public function getRoutingKey();
+
+    /**
+     * @return void
+     */
+    public function renewTimeToLive();
 }
