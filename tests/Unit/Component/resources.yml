@@ -1,0 +1,20 @@
+resources:
+    queues:
+        "log.error":
+            durable: true
+            auto_delete: false
+            attributes:
+                "x-max-length": 1024 #MB
+        "log.something":
+            durable: true
+            auto_delete: false
+    tunnels:
+        "log":
+            type: "direct"
+            durable: true
+            auto_delete: false
+            attributes:
+                "alternate-exchange": "log"
+    bindings:
+        - { tunnel: "log", queue: "log.error", pattern_key: ["error"]}
+        - { tunnel: "log", queue: "log.something", pattern_key: ["error", "warning", "info"]}
