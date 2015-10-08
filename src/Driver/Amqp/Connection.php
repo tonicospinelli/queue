@@ -177,7 +177,8 @@ class Connection implements \Queue\Driver\Connection
                 $tunnel->isAutoDelete(),
                 $tunnel->isInternal(),
                 $this->isNoWait(),
-                $tunnel->getAttributes());
+                $tunnel->getAttributes()
+            );
         } catch (AMQPProtocolChannelException $amqpException) {
             throw new DivergentStructureException('This tunnel is different from server', 0, $amqpException);
         }

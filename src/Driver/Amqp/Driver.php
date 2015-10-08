@@ -17,5 +17,4 @@ class Driver implements \Queue\Driver
             throw new AmqpException($e->getMessage(), null, $e);
         }
     }
-
 }

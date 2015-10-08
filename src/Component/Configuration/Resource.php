@@ -15,10 +15,10 @@ class Resource implements ConfigurationInterface
      */
     private $driver;
 
-    private static $_availableQueueDefinitions = array(
+    private static $availableQueueDefinitions = array(
         Driver::AMQP => 'Queue\Component\Configuration\Definition\Amqp\QueueSection',
     );
-    private static $_availableTunnelDefinitions = array(
+    private static $availableTunnelDefinitions = array(
         Driver::AMQP => 'Queue\Component\Configuration\Definition\Amqp\TunnelSection',
     );
 
@@ -34,10 +34,10 @@ class Resource implements ConfigurationInterface
      */
     public static function getQueueDefinition($driver)
     {
-        if (!self::$_availableQueueDefinitions[$driver]) {
+        if (!self::$availableQueueDefinitions[$driver]) {
             throw new Driver\Exception\UnknownDriverException($driver, DriverManager::getAvailableDrivers());
         }
-        return self::$_availableQueueDefinitions[$driver];
+        return self::$availableQueueDefinitions[$driver];
     }
 
     /**
@@ -47,10 +47,10 @@ class Resource implements ConfigurationInterface
      */
     public static function getTunnelDefinition($driver)
     {
-        if (!self::$_availableTunnelDefinitions[$driver]) {
+        if (!self::$availableTunnelDefinitions[$driver]) {
             throw new Driver\Exception\UnknownDriverException($driver, DriverManager::getAvailableDrivers());
         }
-        return self::$_availableTunnelDefinitions[$driver];
+        return self::$availableTunnelDefinitions[$driver];
     }
 
     /**
@@ -82,7 +82,8 @@ class Resource implements ConfigurationInterface
                     ->end()
             ->end()
         ;
-}
+    }
+
     private function addQueueSection(ArrayNodeDefinition $parentNode)
     {
         $classDefinition = self::getQueueDefinition($this->driver);

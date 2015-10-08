@@ -7,7 +7,6 @@
 
 namespace Queue;
 
-
 use Queue\Driver\Connection as DriverConnection;
 use Queue\Entity\AbstractExchange;
 use Queue\Entity\InterfaceExchange;
@@ -27,6 +26,4 @@ final class ProducerRetry extends Producer
         $this->exchange = $exchange;
         parent::__construct($connection);
     }
-
-
 }

@@ -129,4 +129,3 @@ class Connection implements \Queue\Driver\Connection
     {
     }
 }
-

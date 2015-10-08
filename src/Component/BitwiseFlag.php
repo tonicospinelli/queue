@@ -1,14 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: aspinelli
- * Date: 9/15/15
- * Time: 10:08 AM
- * @author Antonio Spinelli <antonio.spinelli@kanui.com.br>
- */
 
 namespace Queue\Component;
-
 
 trait BitwiseFlag
 {

@@ -8,7 +8,6 @@
 namespace Queue\Exception;
 
 use Exception;
-use Queue\Entity\AbstractExchange;
 
 class RetryQueueException extends QueueException
 {

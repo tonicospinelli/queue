@@ -28,7 +28,4 @@ abstract class AbstractProcess
     {
         return $this->connection;
     }
-
-
-
 }
