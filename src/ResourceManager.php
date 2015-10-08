@@ -3,6 +3,7 @@
 namespace Queue;
 
 use Queue\Resources\Queue;
+use Queue\Resources\Route;
 use Queue\Resources\Tunnel;
 
 class ResourceManager
@@ -39,11 +40,20 @@ class ResourceManager
         foreach ($configuration['tunnels'] as $name => $data) {
             $type = $data['type'];
             unset($data['type']);
+
             $queueClass = $classes['tunnel'];
             $ref = new \ReflectionClass($queueClass);
             /** @var Tunnel $tunnel */
             $tunnel = $ref->newInstance($name, $type);
+
+            $routes = array();
+            foreach ($data['routes'] as $routeName => $queues) {
+                $routes[$routeName] = $queues['queues'];
+            }
+            unset($data['routes']);
+
             $tunnel->setData($data);
+            $tunnel->setRoutes($routes);
             $manager->addTunnel($tunnel);
         }
         return $manager;

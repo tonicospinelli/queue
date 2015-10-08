@@ -2,13 +2,11 @@
 
 namespace Queue\Resources;
 
-use InvalidArgumentException;
-
 /**
  * Class Tunnel is a Value Object.
  * @package Driver
  */
-class Tunnel
+class Tunnel extends Object
 {
     const TYPE_DIRECT = 'direct';
     const TYPE_FANOUT = 'fanout';
@@ -31,35 +29,18 @@ class Tunnel
      * @var array
      */
     private $attributes;
+
     /**
-     * @var Binding[]
+     * @var array
      */
-    private $bindings;
+    private $routes;
 
     public function __construct($name, $type, array $attributes = array())
     {
         $this->name = $name;
         $this->type = $type;
         $this->attributes = $attributes;
-        $this->bindings = array();
-    }
-
-    /**
-     * @param $name
-     * @param array $attributes
-     * @return Tunnel
-     * @throws InvalidArgumentException
-     */
-    public static function createFromConfiguration($name, array $attributes = array())
-    {
-        if (!isset($attributes['type'])) {
-            throw new InvalidArgumentException("Type was not found for {$name} tunnel.");
-        }
-
-        $type = $attributes['type'];
-        unset($attributes['type']);
-
-        return new self($name, $type, $attributes);
+        $this->routes = array();
     }
 
     /**
@@ -87,15 +68,51 @@ class Tunnel
     }
 
     /**
-     * @return Binding[]
+     * @return array
      */
-    public function getBindings()
+    public function getRoutes()
     {
-        return $this->bindings;
+        return $this->routes;
     }
 
-    public function bind(Queue $queue, array $patternKeys = array())
+    /**
+     * @param string $name
+     * @return Queue[]
+     */
+    public function getQueuesFromRoute($name)
     {
-        $this->bindings[] = new Binding($this, $queue, $patternKeys);
+        if ($this->hasRoute($name)) {
+            return $this->routes[$name];
+        }
+        return array();
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasRoute($name)
+    {
+        return isset($this->routes[$name]);
+    }
+
+    /**
+     * @param array $routes
+     */
+    public function setRoutes(array $routes)
+    {
+        $this->routes = $routes;
+    }
+
+    public function addRoute($queueName, $routeName)
+    {
+        $queues = array();
+        if (isset($this->routes[$routeName])) {
+            $queues = $this->routes[$routeName];
+        }
+        if (in_array($queueName, $queues)) {
+            array_push($queues, $queue);
+        }
+        $this->routes[$routeName] = $queues;
     }
 }

@@ -6,7 +6,7 @@ namespace Queue\Resources;
  * Class Queue is a Value Object.
  * @package Driver
  */
-class Queue
+class Queue extends Object
 {
     /**
      * Name of queue.
@@ -19,21 +19,11 @@ class Queue
      * @var array
      */
     private $attributes;
-    /**
-     * @var Binding[]
-     */
-    private $bindings;
 
     public function __construct($name, array $attributes = array())
     {
         $this->name = $name;
         $this->attributes = $attributes;
-        $this->bindings = array();
-    }
-
-    public static function createFromConfiguration($name, array $attributes = array())
-    {
-        return new self($name, $attributes);
     }
 
     /**
@@ -50,14 +40,5 @@ class Queue
     public function getAttributes()
     {
         return $this->attributes;
-    }
-
-    /**
-     * @param Tunnel $tunnel
-     * @param array $patternKeys
-     */
-    public function bind(Tunnel $tunnel, array $patternKeys = array())
-    {
-        $this->bindings[] = new Binding($tunnel, $this, $patternKeys);
     }
 }
