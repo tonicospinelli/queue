@@ -34,7 +34,7 @@ class TunnelSection extends Section
                             ->children()
                                 ->arrayNode('queues')
                                     ->prototype('scalar')->end()
-                                    ->defaultValue(array('asd'))
+                                    ->defaultValue(array(''))
                                 ->end()
                             ->end()
                     ->end()
