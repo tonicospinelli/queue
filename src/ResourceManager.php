@@ -2,7 +2,6 @@
 
 namespace Queue;
 
-use Queue\Resources\Binding;
 use Queue\Resources\Queue;
 use Queue\Resources\Tunnel;
 
@@ -16,24 +15,40 @@ class ResourceManager
      * @var Tunnel[]
      */
     private $tunnels;
-    /**
-     * @var array
-     */
-    private $bindings;
 
-    public function factoryFromConfiguration($type, $name, $arguments)
+    public function __construct()
     {
-        $className = $arguments['class'];
-        unset($arguments['class']);
-
-        if ($type == 'bindings') {
-            $arguments['tunnel'] = $this->getTunnel($arguments['tunnel']);
-            $arguments['queue'] = $this->getQueue($arguments['queue']);
-        } else {
-            $arguments = array($name, $arguments);
-        }
-        return call_user_func_array(array($className, 'createFromConfiguration'), $arguments);
+        $this->queues = array();
+        $this->tunnels = array();
     }
+
+    public static function createFromConfiguration(array $configuration)
+    {
+        $manager = new static();
+        $classes = $configuration['classes'];
+        unset($configuration['classes']);
+
+        foreach ($configuration['queues'] as $name => $data) {
+            $queueClass = $classes['queue'];
+            $ref = new \ReflectionClass($queueClass);
+            /** @var Queue $queue */
+            $queue = $ref->newInstance($name);
+            $queue->setData($data);
+            $manager->addQueue($queue);
+        }
+        foreach ($configuration['tunnels'] as $name => $data) {
+            $type = $data['type'];
+            unset($data['type']);
+            $queueClass = $classes['tunnel'];
+            $ref = new \ReflectionClass($queueClass);
+            /** @var Tunnel $tunnel */
+            $tunnel = $ref->newInstance($name, $type);
+            $tunnel->setData($data);
+            $manager->addTunnel($tunnel);
+        }
+        return $manager;
+    }
+
 
     /**
      * @return Queue[]
@@ -80,43 +95,5 @@ class ResourceManager
     public function addTunnel(Tunnel $tunnel)
     {
         $this->tunnels[$tunnel->getName()] = $tunnel;
-    }
-
-    /**
-     * @return Binding[]
-     */
-    public function getBindings()
-    {
-        return $this->bindings;
-    }
-
-    public function addBinding(Binding $binding)
-    {
-        $this->bindings[] = $binding;
-    }
-
-    /**
-     * @param string $type
-     * @param object $resourceObject
-     */
-    public function addResource($type, $resourceObject)
-    {
-        switch ($type) {
-            case 'queue':
-            case 'queues':
-                $this->addQueue($resourceObject);
-                break;
-            case 'tunnel':
-            case 'tunnels':
-                $this->addTunnel($resourceObject);
-                break;
-            case 'binding':
-            case 'bindings':
-                /** @var Binding $resourceObject */
-                $tunnel = $this->getTunnel($resourceObject->getTunnel()->getName());
-                $tunnel->bind($resourceObject->getQueue(), $resourceObject->getPatternKeys());
-                $this->addBinding($resourceObject);
-                break;
-        }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Queue\Component;
 
-use Queue\Component\Configuration\Definition\Resource;
+use Queue\Component\Configuration\Resource;
 use Queue\Component\Configuration\YamlFileLoader;
 use Queue\ConfigurationInterface;
 use Queue\ResourceManager;
@@ -30,13 +30,7 @@ class Setup
         $processor = new Processor();
         $processedConfig = $processor->processConfiguration($definition, $configValues);
 
-        $resourceManager = new ResourceManager();
-        foreach ($processedConfig as $type => $resources) {
-            foreach ($resources as $resourceName => $resource) {
-                $resourceObject = $resourceManager->factoryFromConfiguration($type, $resourceName, $resource);
-                $resourceManager->addResource($type, $resourceObject);
-            }
-        }
+        $resourceManager = ResourceManager::createFromConfiguration($processedConfig);
 
         return $resourceManager;
     }
