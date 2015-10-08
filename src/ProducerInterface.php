@@ -1,26 +1,15 @@
 <?php
-/**
- * @author Marco.Souza<marco.souza@tricae.com.br>
- * @since 2015.08.28
- *
- */
 
 namespace Queue;
 
-use Queue\Driver\MessageInterface;
-use Queue\Entity\InterfaceExchange;
+use Queue\Resources\MessageInterface;
 
 interface ProducerInterface
 {
     /**
      * @param MessageInterface $message
+     * @param string $patternKey
      * @return void
      */
-    public function publish(MessageInterface $message);
-
-    /**
-     * @return InterfaceExchange
-     */
-    public function exchange();
-
+    public function publish(MessageInterface $message, $patternKey = '');
 }

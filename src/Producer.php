@@ -1,16 +1,31 @@
 <?php
-/**
- * @author Marco.Souza<marco.souza@tricae.com.br>
- * @since 2015.08.28
- *
- */
 
 namespace Queue;
 
-use Queue\Driver\MessageInterface;
+use Queue\Driver\Connection as DriverConnection;
+use Queue\Resources\MessageInterface;
+use Queue\Resources\Tunnel;
 
 abstract class Producer extends AbstractProcess implements ProducerInterface
 {
+    /**
+     * @var Tunnel
+     */
+    private $tunnel;
+
+    public function __construct(DriverConnection $connection, Tunnel $tunnel)
+    {
+        parent::__construct($connection);
+        $this->tunnel = $tunnel;
+    }
+
+    /**
+     * @return Tunnel
+     */
+    public function getTunnel()
+    {
+        return $this->tunnel;
+    }
 
     /**
      * @param string $message
@@ -25,8 +40,8 @@ abstract class Producer extends AbstractProcess implements ProducerInterface
      * @param MessageInterface $message
      * @return void
      */
-    final public function publish(MessageInterface $message)
+    final public function publish(MessageInterface $message, $patternKey = '')
     {
-        $this->getConnection()->publish($message, $this->exchange());
+        $this->getConnection()->publish($message, $this->getTunnel());
     }
 }

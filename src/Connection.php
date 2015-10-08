@@ -3,13 +3,9 @@
 namespace Queue;
 
 use Queue\Driver\Connection as DriverConnection;
-use Queue\Driver\MessageInterface;
-
-use Queue\Entity\AbstractBind as BindEntity;
-use Queue\Entity\AbstractExchange as ExchangeEntity;
-use Queue\Entity\AbstractExchange;
-use Queue\Entity\AbstractQueue as QueueEntity;
-use Queue\Entity\AbstractQueue;
+use Queue\Resources\MessageInterface;
+use Queue\Resources\Queue;
+use Queue\Resources\Tunnel;
 
 class Connection implements DriverConnection
 {
@@ -70,9 +66,9 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function publish(MessageInterface $message, AbstractExchange $exchange)
+    public function publish(MessageInterface $message, Tunnel $tunnel, $patternKey = '')
     {
-        $this->connect()->publish($message, $exchange);
+        $this->connect()->publish($message, $tunnel, $patternKey);
     }
 
     /**
@@ -86,9 +82,9 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function fetchOne(AbstractQueue $queue)
+    public function fetchOne($queueName)
     {
-        return $this->connect()->fetchOne($queue);
+        return $this->connect()->fetchOne($queueName);
     }
 
     /**
@@ -107,11 +103,10 @@ class Connection implements DriverConnection
         $this->connect()->nack($message);
     }
 
-
     /**
      * {@inheritdoc}
      */
-    public function createQueue(QueueEntity $queue)
+    public function createQueue(Queue $queue)
     {
         $this->connect()->createQueue($queue);
     }
@@ -119,40 +114,40 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function dropQueue(QueueEntity $queue)
+    public function deleteQueue(Queue $queue)
     {
-        $this->connect()->dropQueue($queue);
+        $this->connect()->deleteQueue($queue);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createExchange(ExchangeEntity $exchange)
+    public function createTunnel(Tunnel $tunnel)
     {
-        $this->connect()->createExchange($exchange);
+        $this->connect()->createTunnel($tunnel);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dropExchange(ExchangeEntity $exchange)
+    public function dropTunnel(Tunnel $tunnel)
     {
-        $this->connect()->dropExchange($exchange);
+        $this->connect()->dropTunnel($tunnel);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createBind(BindEntity $bind)
+    public function bind($tunnel, $queue, $patternKey = '')
     {
-        $this->connect()->createBind($bind);
+        $this->connect()->bind($tunnel, $queue, $patternKey);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dropBind(BindEntity $bind)
+    public function unbind($tunnel, $queue, $patternKey = '')
     {
-        $this->connect()->dropBind($bind);
+        $this->connect()->unbind($tunnel, $queue, $patternKey);
     }
 }

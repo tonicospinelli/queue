@@ -1,33 +1,29 @@
 <?php
-/**
- * @author Marco.Souza<marco.souza@tricae.com.br>
- * @since 2015.08.28
- *
- */
 
 namespace Queue\Driver;
 
-use Queue\ConsumerInterface;
-use Queue\Driver\Exception\DivergentEntityException;
-use Queue\Exchange;
-use Queue\Entity\AbstractExchange;
-use Queue\Entity\AbstractQueue;
-use Queue\Entity\AbstractBind;
+use Queue\Driver\Exception\DivergentStructureException;
+use Queue\Resources\MessageInterface;
+use Queue\Resources\Queue;
+use Queue\Resources\Tunnel;
 
 interface Connection
 {
 
     /**
+     * Close connection to the server.
      * @return void
      */
     public function close();
 
     /**
-     * @param MessageInterface $message
-     * @param AbstractExchange $producer
+     * Publish a message.
+     * @param MessageInterface $message The message.
+     * @param Tunnel $tunnel The tunnel resource.
+     * @param string $patternKey [optional] The pattern key.
      * @return void
      */
-    public function publish(MessageInterface $message, AbstractExchange $exchange);
+    public function publish(MessageInterface $message, Tunnel $tunnel, $patternKey = '');
 
     /**
      * @param string $message
@@ -38,10 +34,10 @@ interface Connection
     public function prepare($message, array $properties = array(), $id = null);
 
     /**
-     * @param AbstractQueue $queue
+     * @param string $queueName
      * @return MessageInterface|null
      */
-    public function fetchOne(AbstractQueue $queue);
+    public function fetchOne($queueName);
 
     /**
      * @param MessageInterface $message
@@ -56,44 +52,55 @@ interface Connection
     public function nack(MessageInterface $message);
 
     /**
-     * @param AbstractQueue $queue
-     * @throws DivergentEntityException
+     * Creates a queue to storage messages.
+     *
+     * @param Queue $queue The queue resource.
+     * @throws DivergentStructureException
      * @return void
      */
-    public function createQueue(AbstractQueue $queue);
+    public function createQueue(Queue $queue);
 
     /**
-     * @param AbstractQueue $queue
+     * Delete a queue from given name.
+     * @param Queue $queue The queue resource.
      * @return void
      */
-    public function dropQueue(AbstractQueue $queue);
-
+    public function deleteQueue(Queue $queue);
 
     /**
-     * @param AbstractExchange $exchange
-     * @throws DivergentEntityException
+     * A client writes messages to a tunnel.
+     * The tunnel forwards each message on to zero or more queues based on the message’s pattern key.
+     *
+     * @param Tunnel $tunnel the tunnel resource
      * @return void
      */
-    public function createExchange(AbstractExchange $exchange);
+    public function createTunnel(Tunnel $tunnel);
 
     /**
-     * @param AbstractExchange $exchange
+     * @param Tunnel $tunnel
      * @return void
      */
-    public function dropExchange(AbstractExchange $exchange);
-
+    public function dropTunnel(Tunnel $tunnel);
 
     /**
-     * @param AbstractBind $bind
+     * A binding is a relationship between a tunnel and a queue.
+     * This can be simply read as: the queue is interested in messages from this tunnel.
+     *
+     * @param string $queue The queue name to bind.
+     * @param string $tunnel The tunnel name to bind.
+     * @param string $routeKey The route key name to bind.
      * @return void
      */
-    public function createBind(AbstractBind $bind);
+    public function bind($queue, $tunnel, $routeKey = '');
 
     /**
-     * @param AbstractBind $bind
+     * Unbinding a tunnel and a queue.
+     *
+     * @param string $queue The Queue name.
+     * @param string $tunnel The tunnel name.
+     * @param string $routeKey [optional] Depending on the tunnel type, the tunnel may or may not use the Route Key
+     *                           to determine the queues to which it should publish the message.
      * @return void
      */
-    public function dropBind(AbstractBind $bind);
-
-
+    public function unbind($queue, $tunnel, $routeKey = '');
 }

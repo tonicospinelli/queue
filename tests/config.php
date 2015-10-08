@@ -3,7 +3,7 @@
  * define Some Constrains to Test
  */
 
-define('RABBIT_HOST','127.0.0.1');
+define('RABBIT_HOST','rabbit.kanui.dev');
 define('RABBIT_PORT','5672');
-define('RABBIT_USERNAME','admin');
-define('RABBIT_PASSWORD','tricae');
+define('RABBIT_USERNAME','kanui');
+define('RABBIT_PASSWORD','kanui');

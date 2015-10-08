@@ -3,12 +3,10 @@
 namespace Queue\Driver\InMemory;
 
 use Queue\ConfigurationInterface;
-use Queue\Driver\MessageInterface;
-use Queue\Entity\AbstractExchange;
-use Queue\Entity\AbstractQueue;
-use Queue\Entity\AbstractBind as BindEntity;
-use Queue\Entity\AbstractExchange as ExchangeEntity;
-use Queue\Entity\AbstractQueue as QueueEntity;
+use Queue\Resources\Message;
+use Queue\Resources\MessageInterface;
+use Queue\Resources\Queue;
+use Queue\Resources\Tunnel;
 
 class Connection implements \Queue\Driver\Connection
 {
@@ -19,16 +17,14 @@ class Connection implements \Queue\Driver\Connection
 
     public function __construct(ConfigurationInterface $configuration)
     {
-        $throw = $configuration->getOption('forceException', false);
-        if($throw)
-            throw new \Exception();
     }
 
     /**
      * {@inheritdoc}
      */
     public function close()
-    {}
+    {
+    }
 
     /**
      * {@inheritdoc}
@@ -41,15 +37,19 @@ class Connection implements \Queue\Driver\Connection
     /**
      * {@inheritdoc}
      */
-    public function publish(MessageInterface $message, AbstractExchange $exchange)
+    public function publish(MessageInterface $message, Tunnel $tunnel, $patternKey = '')
     {
-        $connection = $this->getConnection($exchange->getExchangeName());
-        msg_send($connection, 1 , $message->getBody());
+        foreach ($tunnel->getRoutes() as $binding) {
+            if (in_array($patternKey, $binding->getName())) {
+                $connection = $this->getConnection($binding->getQueue()->getName());
+                msg_send($connection, 1, $message->getBody());
+            }
+        }
     }
 
     private function getConnection($queue)
     {
-        if( ! isset($this->connection[$queue])) {
+        if (!isset($this->connection[$queue])) {
             $this->connection[$queue] = msg_get_queue(rand());
         }
         return $this->connection[$queue];
@@ -58,11 +58,11 @@ class Connection implements \Queue\Driver\Connection
     /**
      * {@inheritdoc}
      */
-    public function fetchOne(AbstractQueue $queue)
+    public function fetchOne($queueName)
     {
-        $connection = $this->getConnection($queue->getQueueName());
-        $msg_type = NULL;
-        $msg = NULL;
+        $connection = $this->getConnection($queueName);
+        $msg_type = null;
+        $msg = null;
         $max_msg_size = 512;
         msg_receive($connection, 1, $msg_type, $max_msg_size, $message, true, MSG_IPC_NOWAIT);
         if (!$message) {
@@ -72,76 +72,61 @@ class Connection implements \Queue\Driver\Connection
     }
 
     /**
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritdoc}
      */
     public function ack(MessageInterface $message)
     {
     }
 
     /**
-     *
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritdoc}
      */
     public function nack(MessageInterface $message)
     {
     }
 
-
-
     /**
-     * @param QueueEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function createQueue(QueueEntity $queue)
+    public function createQueue(Queue $queue)
     {
-        // TODO: Implement createQueue() method.
     }
 
     /**
-     * @param QueueEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function dropQueue(QueueEntity $queue)
+    public function deleteQueue(Queue $queue)
     {
-        // TODO: Implement dropQueue() method.
+        $connection = $this->getConnection($queue->getName());
+        msg_remove_queue($connection);
     }
 
     /**
-     * @param ExchangeEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function createExchange(ExchangeEntity $queue)
+    public function createTunnel(Tunnel $tunnel)
     {
-        // TODO: Implement createExchange() method.
     }
 
     /**
-     * @param ExchangeEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function dropExchange(ExchangeEntity $queue)
+    public function dropTunnel(Tunnel $tunnel)
     {
-        // TODO: Implement dropExchange() method.
     }
 
     /**
-     * @param BindEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function createBind(BindEntity $queue)
+    public function bind($queue, $tunnel, $routeKey = '')
     {
-        // TODO: Implement createBind() method.
     }
 
     /**
-     * @param BindEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function dropBind(BindEntity $queue)
+    public function unbind($queue, $tunnel, $routeKey = '')
     {
-        // TODO: Implement dropBind() method.
     }
 }
 

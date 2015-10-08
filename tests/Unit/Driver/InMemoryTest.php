@@ -27,12 +27,12 @@ class InMemoryTest extends \PHPUnit_Framework_TestCase {
     public function testDropQueue()
     {
         $connect = ConnectionFake::inMemory();
-        $connect->dropQueue(new QueueEntity());
+        $connect->deleteQueue(new QueueEntity());
     }
 
     public function testDropExchange()
     {
         $connect = ConnectionFake::inMemory();
-        $connect->dropExchange(new ExchangeEntity());
+        $connect->dropTunnel(new ExchangeEntity());
     }
 }

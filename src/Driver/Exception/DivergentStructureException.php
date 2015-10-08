@@ -7,5 +7,5 @@
 
 namespace Queue\Driver\Exception;
 
-class DivergentEntityException extends AbstractDriverException
+class DivergentStructureException extends AbstractDriverException
 {}

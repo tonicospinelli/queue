@@ -28,8 +28,8 @@ class AmqpTest extends \PHPUnit_Framework_TestCase {
     public function testBind()
     {
         $connect = ConnectionFake::amqp();
-        $connect->createBind(new UnusedExchangeBind());
-        $connect->createBind(new UnusedQueueBind());
+        $connect->bind(new UnusedExchangeBind());
+        $connect->bind(new UnusedQueueBind());
     }
 
     public function testDropBind()
@@ -45,7 +45,7 @@ class AmqpTest extends \PHPUnit_Framework_TestCase {
     public function dropExchangeAndQueue()
     {
         $connect = ConnectionFake::amqp();
-        $connect->dropExchange((new UnusedQueueBind())->getExchange());
-        $connect->dropQueue((new UnusedQueueBind())->getTargetQueue());
+        $connect->dropTunnel((new UnusedQueueBind())->getExchange());
+        $connect->deleteQueue((new UnusedQueueBind())->getTargetQueue());
     }
 }

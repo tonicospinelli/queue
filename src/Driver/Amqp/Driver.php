@@ -7,11 +7,7 @@ use Queue\ConfigurationInterface;
 class Driver implements \Queue\Driver
 {
     /**
-     * Attempts to create a connection with the queue.
-     *
-     * @param ConfigurationInterface $configuration
-     * @return \Queue\Driver\Connection The queue connection.
-     * @throws AmqpException
+     * {@inheritdoc}
      */
     public function connect(ConfigurationInterface $configuration)
     {

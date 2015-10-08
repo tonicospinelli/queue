@@ -7,11 +7,7 @@ use Queue\ConfigurationInterface;
 class Driver implements \Queue\Driver
 {
     /**
-     * Attempts to create a connection with the queue.
-     *
-     * @param ConfigurationInterface $configuration
-     * @return \Queue\Driver\Connection The queue connection.
-     * @throws InMemoryException
+     * {@inheritdoc}
      */
     public function connect(ConfigurationInterface $configuration)
     {
@@ -20,5 +16,13 @@ class Driver implements \Queue\Driver
         } catch (\Exception $e) {
             throw new InMemoryException($e->getMessage(), null, $e);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return self::IN_MEMORY;
     }
 }

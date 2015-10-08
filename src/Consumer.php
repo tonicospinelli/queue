@@ -3,7 +3,7 @@
 namespace Queue;
 
 use Queue\Driver\Connection as DriverConnection;
-use Queue\Driver\MessageInterface;
+use Queue\Resources\MessageInterface;
 use Queue\Exception\RetryQueueException;
 
 abstract class Consumer extends AbstractProcess implements ConsumerInterface

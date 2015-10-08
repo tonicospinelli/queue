@@ -7,6 +7,7 @@
 
 namespace Queue;
 
+use Queue\Driver\Connection;
 use Queue\Driver\Exception\DriverException;
 
 interface Driver
@@ -19,10 +20,9 @@ interface Driver
      *
      * @param ConfigurationInterface $configuration
      *
-     * @return Driver\Connection The database connection.
+     * @return Connection The database connection.
      *
      * @throws DriverException
      */
     public function connect(ConfigurationInterface $configuration);
-
 }
