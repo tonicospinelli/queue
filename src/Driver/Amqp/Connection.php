@@ -137,20 +137,16 @@ class Connection implements \Queue\Driver\Connection
      */
     public function createQueue(Queue $queue)
     {
-        try {
-            $channel = $this->connection->channel();
-            $channel->queue_declare(
-                $queue->getName(),
-                $queue->isPassive(),
-                $queue->isDurable(),
-                $queue->isExclusive(),
-                $queue->isAutoDelete(),
-                $this->isNoWait(),
-                $queue->getAttributes()
-            );
-        } catch (AMQPProtocolChannelException $amqpException) {
-            throw new DivergentStructureException('This Queue is different from servers', 0, $amqpException);
-        }
+        $channel = $this->connection->channel();
+        $channel->queue_declare(
+            $queue->getName(),
+            $queue->isPassive(),
+            $queue->isDurable(),
+            $queue->isExclusive(),
+            $queue->isAutoDelete(),
+            $this->isNoWait(),
+            $queue->getAttributes()
+        );
     }
 
     /**
@@ -167,27 +163,23 @@ class Connection implements \Queue\Driver\Connection
      */
     public function createTunnel(Tunnel $tunnel)
     {
-        try {
-            $channel = $this->connection->channel();
-            $channel->exchange_declare(
-                $tunnel->getName(),
-                $tunnel->getType(),
-                $tunnel->isPassive(),
-                $tunnel->isDurable(),
-                $tunnel->isAutoDelete(),
-                $tunnel->isInternal(),
-                $this->isNoWait(),
-                $tunnel->getAttributes()
-            );
-        } catch (AMQPProtocolChannelException $amqpException) {
-            throw new DivergentStructureException('This tunnel is different from server', 0, $amqpException);
-        }
+        $channel = $this->connection->channel();
+        $channel->exchange_declare(
+            $tunnel->getName(),
+            $tunnel->getType(),
+            $tunnel->isPassive(),
+            $tunnel->isDurable(),
+            $tunnel->isAutoDelete(),
+            $tunnel->isInternal(),
+            $this->isNoWait(),
+            $tunnel->getAttributes()
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dropTunnel(Tunnel $tunnel)
+    public function deleteTunnel(Tunnel $tunnel)
     {
         $channel = $this->connection->channel();
         $channel->exchange_delete($tunnel->getName());

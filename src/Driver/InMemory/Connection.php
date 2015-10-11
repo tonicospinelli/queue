@@ -2,6 +2,7 @@
 
 namespace Queue\Driver\InMemory;
 
+use Queue\Configuration;
 use Queue\ConfigurationInterface;
 use Queue\Resources\Message;
 use Queue\Resources\MessageInterface;
@@ -11,12 +12,47 @@ use Queue\Resources\Tunnel;
 class Connection implements \Queue\Driver\Connection
 {
     /**
+     * @var Configuration
+     */
+    private $configuration;
+    /**
      * @var array
      */
     protected $connection;
+    /**
+     * @var Queue[]
+     */
+    private $queues;
+    /**
+     * @var Tunnel[]
+     */
+    private $tunnels;
 
     public function __construct(ConfigurationInterface $configuration)
     {
+        $this->queues = array();
+        $this->tunnels = array();
+        $this->configuration = $configuration;
+    }
+
+    /**
+     * @param string $queue
+     * @return resource
+     */
+    private function getConnection($queue)
+    {
+        if (!isset($this->connection[$queue])) {
+            $this->connection[$queue] = msg_get_queue(rand());
+        }
+        return $this->connection[$queue];
+    }
+
+    /**
+     * @return Configuration
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
     }
 
     /**
@@ -39,20 +75,24 @@ class Connection implements \Queue\Driver\Connection
      */
     public function publish(MessageInterface $message, Tunnel $tunnel, $patternKey = '')
     {
-        foreach ($tunnel->getRoutes() as $binding) {
-            if (in_array($patternKey, $binding->getName())) {
-                $connection = $this->getConnection($binding->getQueue()->getName());
-                msg_send($connection, 1, $message->getBody());
+        foreach ($tunnel->getRoutes() as $routeName => $queues) {
+            if (!preg_match('/' . $routeName . '/', $patternKey)) {
+                continue;
+            }
+            foreach ($queues as $queue) {
+                $this->send($queue, $message);
             }
         }
     }
 
-    private function getConnection($queue)
+    /**
+     * @param string $queue
+     * @param MessageInterface $message
+     */
+    private function send($queue, MessageInterface $message)
     {
-        if (!isset($this->connection[$queue])) {
-            $this->connection[$queue] = msg_get_queue(rand());
-        }
-        return $this->connection[$queue];
+        $connection = $this->getConnection($queue);
+        msg_send($connection, 1, $message->getBody());
     }
 
     /**
@@ -68,7 +108,7 @@ class Connection implements \Queue\Driver\Connection
         if (!$message) {
             return null;
         }
-        return $this->prepare($message);
+        return $this->prepare($message, array('queue' => $queueName));
     }
 
     /**
@@ -83,6 +123,9 @@ class Connection implements \Queue\Driver\Connection
      */
     public function nack(MessageInterface $message)
     {
+        if ($message->isRequeue() && ($queue = $message->getProperty('queue'))) {
+            $this->send($queue, $this->prepare($message->getBody()));
+        }
     }
 
     /**
@@ -90,6 +133,8 @@ class Connection implements \Queue\Driver\Connection
      */
     public function createQueue(Queue $queue)
     {
+        $this->queues[$queue->getName()] = $queue;
+        $this->getConnection($queue->getName());
     }
 
     /**
@@ -99,6 +144,7 @@ class Connection implements \Queue\Driver\Connection
     {
         $connection = $this->getConnection($queue->getName());
         msg_remove_queue($connection);
+        unset($this->queues[$queue->getName()]);
     }
 
     /**
@@ -106,13 +152,15 @@ class Connection implements \Queue\Driver\Connection
      */
     public function createTunnel(Tunnel $tunnel)
     {
+        $this->tunnels[$tunnel->getName()] = $tunnel;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dropTunnel(Tunnel $tunnel)
+    public function deleteTunnel(Tunnel $tunnel)
     {
+        unset($this->tunnels[$tunnel->getName()]);
     }
 
     /**
@@ -120,6 +168,7 @@ class Connection implements \Queue\Driver\Connection
      */
     public function bind($queue, $tunnel, $routeKey = '')
     {
+        $this->tunnels[$tunnel]->addRoute($queue, $routeKey);
     }
 
     /**
@@ -127,5 +176,17 @@ class Connection implements \Queue\Driver\Connection
      */
     public function unbind($queue, $tunnel, $routeKey = '')
     {
+        $routes = $this->tunnels[$tunnel]->getRoutes();
+
+        if (!isset($routes[$routeKey])) {
+            return;
+        }
+
+        $queues = array_filter($routes[$routeKey], function ($queueName) use ($queue) {
+            return $queueName != $queue;
+        });
+
+        $routes[$routeKey] = $queues;
+        $this->tunnels[$tunnel]->setRoutes($routes);
     }
 }

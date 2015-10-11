@@ -80,7 +80,7 @@ interface Connection
      * @param Tunnel $tunnel
      * @return void
      */
-    public function dropTunnel(Tunnel $tunnel);
+    public function deleteTunnel(Tunnel $tunnel);
 
     /**
      * A binding is a relationship between a tunnel and a queue.

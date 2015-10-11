@@ -7,45 +7,54 @@
 
 namespace QueueTest\Unit\Driver;
 
-use QueueTest\Fake\ConnectionFake;
-use QueueTest\Mocks\Entity\UnusedExchangeBind;
-use QueueTest\Mocks\Entity\UnusedQueueBind;
+use Queue\Configuration;
+use Queue\Driver;
+use Queue\Resources\Amqp\Queue;
+use Queue\Resources\Amqp\Tunnel;
 
-class AmqpTest extends \PHPUnit_Framework_TestCase {
-
+class AmqpTest extends TestCase
+{
     /**
-     * @expectedException \Queue\Driver\Amqp\AmqpException
+     * @return \Queue\Driver\Connection
      */
-    public function testConnectionException()
+    public function createConnection()
     {
-        $connect = ConnectionFake::amqp(true);
-        $connect->close();
+        return new Driver\Amqp\Connection(
+            new Configuration(
+                Driver::AMQP,
+                '33.33.33.1',
+                5672,
+                'kanui',
+                'kanui',
+                array('no_wait', true)
+            )
+        );
     }
 
     /**
-     * @expectedException \Queue\Driver\Exception\BindException
+     * @param string $name
+     * @param string $type
+     * @param array $attributes
+     * @return \Queue\Resources\Tunnel
      */
-    public function testBind()
+    public function createTunnel($name, $type, array $attributes = array())
     {
-        $connect = ConnectionFake::amqp();
-        $connect->bind(new UnusedExchangeBind());
-        $connect->bind(new UnusedQueueBind());
-    }
-
-    public function testDropBind()
-    {
-        $connect = ConnectionFake::amqp();
-        $connect->dropBind(new UnusedQueueBind());
-        $connect->dropBind(new UnusedExchangeBind());
+        $tunnel = new Tunnel($name, $type, $attributes);
+        $tunnel->setDurable();
+        $tunnel->setAutoDelete(false);
+        return $tunnel;
     }
 
     /**
-     * @before testBind
+     * @param string $name
+     * @param array $attributes
+     * @return Queue
      */
-    public function dropExchangeAndQueue()
+    public function createQueue($name, array $attributes = array())
     {
-        $connect = ConnectionFake::amqp();
-        $connect->dropTunnel((new UnusedQueueBind())->getExchange());
-        $connect->deleteQueue((new UnusedQueueBind())->getTargetQueue());
+        $queue = new Queue($name, $attributes);
+        $queue->setDurable();
+        $queue->setAutoDelete(false);
+        return $queue;
     }
 }

@@ -130,9 +130,9 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function dropTunnel(Tunnel $tunnel)
+    public function deleteTunnel(Tunnel $tunnel)
     {
-        $this->connect()->dropTunnel($tunnel);
+        $this->connect()->deleteTunnel($tunnel);
     }
 
     /**

@@ -1,38 +1,43 @@
 <?php
-/**
- * @author Marco.Souza<marco.souza@tricae.com.br>
- * @since 2015.09.22
- *
- */
 
 namespace QueueTest\Unit\Driver;
 
+use Queue\Configuration;
+use Queue\Driver;
+use Queue\Driver\InMemory\Connection;
+use Queue\Resources\Queue;
+use Queue\Resources\Tunnel;
 
-
-use QueueTest\Fake\ConnectionFake;
-use QueueTest\Mocks\Entity\ExchangeEntity;
-use QueueTest\Mocks\Entity\QueueEntity;
-
-class InMemoryTest extends \PHPUnit_Framework_TestCase {
+class InMemoryTest extends TestCase
+{
+    /**
+     * @return \Queue\Driver\Connection
+     */
+    public function createConnection()
+    {
+        return new Connection(new Configuration(Driver::IN_MEMORY));
+    }
 
     /**
-     * @expectedException \Queue\Driver\InMemory\InMemoryException
+     * @param string $name
+     * @param string $type
+     * @param array $attributes
+     * @return Tunnel
      */
-    public function testConnectionException()
+    public function createTunnel($name, $type, array $attributes = array())
     {
-        $connect = ConnectionFake::inMemory(true);
-        $connect->close();
+        $tunnel = new Tunnel($name,$type,$attributes);
+        $tunnel->addRoute(self::QUEUE_NAME, self::ROUTE_NAME);
+        return $tunnel;
     }
 
-    public function testDropQueue()
+    /**
+     * @param string $name
+     * @param array $attributes
+     * @return Queue
+     */
+    public function createQueue($name, array $attributes = array())
     {
-        $connect = ConnectionFake::inMemory();
-        $connect->deleteQueue(new QueueEntity());
-    }
-
-    public function testDropExchange()
-    {
-        $connect = ConnectionFake::inMemory();
-        $connect->dropTunnel(new ExchangeEntity());
+        return new Queue($name, $attributes);
     }
 }
