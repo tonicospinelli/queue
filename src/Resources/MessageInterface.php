@@ -25,6 +25,13 @@ interface MessageInterface
     public function getProperties();
 
     /**
+     * @param string $name
+     * @param string $defaultValue
+     * @return string
+     */
+    public function getProperty($name, $defaultValue = null);
+
+    /**
      * @param bool $confirm
      * @return void
      */

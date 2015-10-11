@@ -43,6 +43,19 @@ class Message implements MessageInterface
     }
 
     /**
+     * @param string $name
+     * @param string $defaultValue
+     * @return string
+     */
+    public function getProperty($name, $defaultValue = null)
+    {
+        if (isset($this->properties[$name])) {
+            return $this->properties[$name];
+        }
+        return $defaultValue;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setAck($confirm = true)
