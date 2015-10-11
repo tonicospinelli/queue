@@ -110,8 +110,8 @@ class Tunnel extends Object
         if (isset($this->routes[$routeName])) {
             $queues = $this->routes[$routeName];
         }
-        if (in_array($queueName, $queues)) {
-            array_push($queues, $queue);
+        if (!in_array($queueName, $queues)) {
+            array_push($queues, $queueName);
         }
         $this->routes[$routeName] = $queues;
     }
