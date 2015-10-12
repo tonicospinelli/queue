@@ -48,19 +48,19 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return Connection
      */
-    public function testIWantToConnectionAtRabbitMqServer()
+    public function testIWantToConnectAtMessageQueueServer()
     {
         try {
             $connection = $this->createConnection();
             self::$connection = $connection;
             return $connection;
         } catch (\Exception $e) {
-            $this->markTestSkipped('Cannot connect at RabbitMQ Server');
+            $this->markTestSkipped('Cannot connect at Message Queue Server');
         }
     }
 
     /**
-     * @depends testIWantToConnectionAtRabbitMqServer
+     * @depends testIWantToConnectAtMessageQueueServer
      * @param Connection $connection
      * @return Connection
      */
