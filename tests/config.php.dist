@@ -1,0 +1,8 @@
+<?php
+
+// Just a template for tests
+
+define('RABBIT_HOST', '127.0.0.1');
+define('RABBIT_PORT', '5672');
+define('RABBIT_USERNAME', 'guest');
+define('RABBIT_PASSWORD', 'guest');

@@ -1,11 +1,25 @@
 # Queue
 A PHP Lib for Handle Queue 
 
+### Setup
+
+```
+$ git clone git@github.com:tricae-br/queue.git
+$ cd queue/
+$ composer install
+```
+
+### Tests
+
+```
+$ cd tests/
+$ cp config.php.dist config.php
+$ phpunit .
+```
 
 ### How to publish a Message
 
 ```php
-
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Queue\Configuration;
