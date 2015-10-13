@@ -10,6 +10,9 @@ namespace QueueTest\Mocks\Entity;
 
 class DivergentExchangeEntity extends ExchangeEntity
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getType()
     {
         return self::TYPE_DIRECT;

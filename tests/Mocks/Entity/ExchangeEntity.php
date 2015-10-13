@@ -12,11 +12,17 @@ use Queue\Entity\AbstractExchange;
 
 class ExchangeEntity extends AbstractExchange
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getExchangeName()
     {
         return 'migration.queue.test';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getType()
     {
         return self::TYPE_FANOUT;

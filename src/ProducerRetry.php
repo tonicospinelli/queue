@@ -17,11 +17,18 @@ final class ProducerRetry extends Producer
 {
     protected $exchange;
 
+    /**
+     * @return AbstractExchange
+     */
     public function exchange()
     {
         return $this->exchange;
     }
 
+    /**
+     * @param DriverConnection $connection
+     * @param AbstractExchange $exchange
+     */
     public function __construct(DriverConnection $connection, AbstractExchange $exchange)
     {
         $this->exchange = $exchange;

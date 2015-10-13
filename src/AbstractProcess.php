@@ -16,6 +16,9 @@ abstract class AbstractProcess
      */
     private $connection;
 
+    /**
+     * @param DriverConnection $connection
+     */
     public function __construct(DriverConnection $connection)
     {
         $this->connection = $connection;
