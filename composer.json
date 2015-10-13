@@ -11,7 +11,8 @@
     "require-dev": {
         "phpunit/phpunit": "4.2.*",
         "phpmd/phpmd": "@stable",
-        "squizlabs/php_codesniffer": "@stable"
+        "squizlabs/php_codesniffer": "@stable",
+        "phing/phing": "2.*"
     },
     "autoload": {
         "psr-4": {

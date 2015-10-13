@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="tonicospinelli/queue" default="build">
+
+    <target name="build">
+        <echo msg="Running unit tests" />
+
+        <phpunit>
+            <batchtest>
+                <fileset dir="tests">
+                    <include name="**/*Test*.php"/>
+                </fileset>
+            </batchtest>
+        </phpunit>
+
+        <echo msg="Running unit tests [OK]" />
+    </target>
+
+</project>
