@@ -7,7 +7,6 @@
 
 namespace QueueTest\Fake;
 
-
 use Queue\Configuration;
 use Queue\Driver;
 use Queue\DriverManager;
@@ -32,4 +31,4 @@ class ConnectionFake
             array(self::inMemory()),
         );
     }
-} 
+}

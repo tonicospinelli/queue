@@ -7,7 +7,6 @@
 
 namespace QueueTest\Mocks\Consumer;
 
-
 use Queue\Consumer;
 use Queue\Driver\MessageInterface;
 use QueueTest\Mocks\Entity\QueueEntity;
@@ -29,7 +28,6 @@ class ConsumerMockMessage extends Consumer
         $message->isAck();
         $message->isNotAck();
         $message->isRequeue();
-
     }
 
     /**
@@ -39,6 +37,4 @@ class ConsumerMockMessage extends Consumer
     {
         return new QueueEntity();
     }
-
-
-} 
+}

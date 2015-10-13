@@ -31,4 +31,3 @@ class DriverManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Queue\Connection', $connection);
     }
 }
- 

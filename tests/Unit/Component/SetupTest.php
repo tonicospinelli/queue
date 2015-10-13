@@ -8,7 +8,6 @@ use Queue\Driver;
 
 class SetupTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testCreateYAMLResource()
     {
         $resourceManager = Setup::createYAMLResource(__DIR__ . '/resources.yml', new Configuration(Driver::AMQP));

@@ -9,7 +9,6 @@ use Queue\Resources\Tunnel;
 
 interface Connection
 {
-
     /**
      * Close connection to the server.
      * @return void

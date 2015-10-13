@@ -33,5 +33,4 @@ class ProducerMock extends Producer
         $message->setRoutingKey('');
         return $message;
     }
-
 }

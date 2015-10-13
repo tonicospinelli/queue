@@ -2,7 +2,6 @@
 
 namespace QueueTest\Unit\Component;
 
-
 use Queue\Component\ResourceTool;
 use Queue\Component\Setup;
 use Queue\Configuration;
@@ -12,7 +11,6 @@ use Queue\DriverManager;
 
 class ResourceToolTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testRaiseAmqpResourcesSoThatDoesNotThrowAnException()
     {
         $connection = $this->getMockBuilder('Queue\Driver\Connection')->getMock();

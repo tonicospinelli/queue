@@ -7,13 +7,11 @@
 
 namespace QueueTest\Unit;
 
-
 use Queue\Driver\Connection;
 use QueueTest\Fake\ConnectionFake;
 
-class ConnectionTest extends \PHPUnit_Framework_TestCase {
-
-
+class ConnectionTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @dataProvider connectionProvider
      * @param Connection $connection
@@ -27,6 +25,4 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
     {
         return ConnectionFake::providerAll();
     }
-
 }
- 

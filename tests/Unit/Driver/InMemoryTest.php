@@ -26,7 +26,7 @@ class InMemoryTest extends TestCase
      */
     public function createTunnel($name, $type, array $attributes = array())
     {
-        $tunnel = new Tunnel($name,$type,$attributes);
+        $tunnel = new Tunnel($name, $type, $attributes);
         $tunnel->addRoute(self::QUEUE_NAME, self::ROUTE_NAME);
         return $tunnel;
     }
