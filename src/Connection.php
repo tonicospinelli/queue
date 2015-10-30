@@ -17,10 +17,12 @@ class Connection implements DriverConnection
      * @var DriverConnection
      */
     private $connection;
+
     /**
      * @var Driver
      */
     private $driver;
+
     /**
      * @var ConfigurationInterface
      */

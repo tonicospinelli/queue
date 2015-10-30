@@ -66,8 +66,14 @@ abstract class AbstractExchange extends AbstractEntity implements InterfaceExcha
         return $this->internal;
     }
 
+    /**
+     * @return string
+     */
     abstract function getExchangeName();
 
+    /**
+     * @return string
+     */
     abstract function getType();
 
 } 

@@ -11,6 +11,9 @@ use Queue\Driver\Connection as DriverConnection;
 
 abstract class AbstractBind extends AbstractEntity implements InterfaceBind
 {
+    /**
+     * @var bool
+     */
     protected $invalid = false;
 
     /**
@@ -23,7 +26,9 @@ abstract class AbstractBind extends AbstractEntity implements InterfaceBind
      */
     abstract function getExchange();
 
-
+    /**
+     * @return bool
+     */
     public function isDeprecated()
     {
         return $this->invalid;

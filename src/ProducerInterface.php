@@ -19,7 +19,7 @@ interface ProducerInterface
     public function publish(MessageInterface $message);
 
     /**
-     * @return InterfaceExchange
+     * @return \Queue\Entity\AbstractExchange
      */
     public function exchange();
 

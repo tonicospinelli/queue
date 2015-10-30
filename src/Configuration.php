@@ -8,27 +8,40 @@ class Configuration implements ConfigurationInterface
      * @var string
      */
     private $driver;
+
     /**
      * @var string
      */
     private $hostname;
+
     /**
      * @var string
      */
     private $username;
+
     /**
      * @var string
      */
     private $password;
+
     /**
      * @var int
      */
     private $port;
+
     /**
      * @var array
      */
     private $options;
 
+    /**
+     * @param $driver
+     * @param string $hostname
+     * @param int $port
+     * @param string $username
+     * @param string $password
+     * @param array $options
+     */
     public function __construct(
         $driver,
         $hostname = null,
@@ -85,6 +98,11 @@ class Configuration implements ConfigurationInterface
         return $this->port;
     }
 
+    /**
+     * @param $name
+     * @param string $defaultValue
+     * @return string
+     */
     public function getOption($name, $defaultValue = null)
     {
         if (!isset($this->options[$name])) {

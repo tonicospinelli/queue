@@ -7,7 +7,6 @@
 
 namespace Queue\Driver;
 
-use Queue\ConsumerInterface;
 use Queue\Driver\Exception\DivergentEntityException;
 use Queue\Exchange;
 use Queue\Entity\AbstractExchange;
@@ -24,7 +23,7 @@ interface Connection
 
     /**
      * @param MessageInterface $message
-     * @param AbstractExchange $producer
+     * @param AbstractExchange $exchange
      * @return void
      */
     public function publish(MessageInterface $message, AbstractExchange $exchange);

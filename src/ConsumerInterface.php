@@ -12,11 +12,6 @@ interface ConsumerInterface
     const NOT_PERSISTENT = false;
 
     /**
-     * @return void
-     */
-    public function consume();
-
-    /**
      * @param MessageInterface $message
      * @throws RetryQueueException
      * @return void
