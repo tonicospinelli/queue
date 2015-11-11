@@ -54,4 +54,20 @@ class Message extends Object implements MessageInterface
     {
         return $this->isFlagSet(self::ACK);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setRequeue($confirm = true)
+    {
+        $this->setFlag(self::REQUEUE, $confirm);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isRequeue()
+    {
+        return $this->isFlagSet(self::REQUEUE);
+    }
 }

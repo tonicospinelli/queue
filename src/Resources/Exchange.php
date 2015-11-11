@@ -3,10 +3,10 @@
 namespace Queue\Resources;
 
 /**
- * Class Tunnel is a Value Object.
+ * Class Exchange is a Value Object.
  * @package Driver
  */
-class Tunnel extends Object implements TunnelInterface
+class Exchange extends Object implements ExchangeInterface
 {
     /**
      * Name of queue.
@@ -22,14 +22,14 @@ class Tunnel extends Object implements TunnelInterface
     /**
      * @var array
      */
-    private $routes;
+    private $bindings;
 
     public function __construct($name, $type, array $attributes = array())
     {
         parent::__construct($attributes);
         $this->name = $name;
         $this->type = $type;
-        $this->routes = array();
+        $this->bindings = array();
     }
 
     /**
@@ -51,18 +51,18 @@ class Tunnel extends Object implements TunnelInterface
     /**
      * {@inheritdoc}
      */
-    public function getRoutes()
+    public function getBindings()
     {
-        return $this->routes;
+        return $this->bindings;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getQueuesFromRoute($name)
+    public function getQueuesFromBinding($name)
     {
-        if ($this->hasRoute($name)) {
-            return $this->routes[$name];
+        if ($this->hasBinding($name)) {
+            return $this->bindings[$name];
         }
         return array();
     }
@@ -70,20 +70,20 @@ class Tunnel extends Object implements TunnelInterface
     /**
      * {@inheritdoc}
      */
-    public function hasRoute($name)
+    public function hasBinding($name)
     {
-        return isset($this->routes[$name]);
+        return isset($this->bindings[$name]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setRoutes(array $routes)
+    public function setBindings(array $bindings)
     {
-        $this->routes = array();
-        foreach ($routes as $routeName => $queues) {
+        $this->bindings = array();
+        foreach ($bindings as $routingKey => $queues) {
             foreach ($queues as $queue) {
-                $this->addRoute($queue, $routeName);
+                $this->addBinding($queue, $routingKey);
             }
         }
     }
@@ -91,15 +91,15 @@ class Tunnel extends Object implements TunnelInterface
     /**
      * {@inheritdoc}
      */
-    public function addRoute($queueName, $routeName = '')
+    public function addBinding($queueName, $routingKey = '')
     {
         $queues = array();
-        if (isset($this->routes[$routeName])) {
-            $queues = $this->routes[$routeName];
+        if (isset($this->bindings[$routingKey])) {
+            $queues = $this->bindings[$routingKey];
         }
         if (!in_array($queueName, $queues)) {
             array_push($queues, $queueName);
         }
-        $this->routes[$routeName] = $queues;
+        $this->bindings[$routingKey] = $queues;
     }
 }

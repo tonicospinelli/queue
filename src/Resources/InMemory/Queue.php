@@ -2,11 +2,11 @@
 
 namespace Queue\Resources\InMemory;
 
-use Queue\Resources\Queue as QueueResource;
+use Queue\Resources\Queue as BaseQueue;
 
 /**
  * Class Queue is a Value Object
  */
-class Queue extends QueueResource implements QueueInterface
+class Queue extends BaseQueue implements QueueInterface
 {
 }

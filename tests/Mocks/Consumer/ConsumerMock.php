@@ -3,11 +3,7 @@
 namespace QueueTest\Mocks\Consumer;
 
 use Queue\Consumer;
-use Queue\Driver\MessageInterface;
-use Queue\Entity\InterfaceQueue;
-use Queue\Exception\QueueException;
-use Queue\ExchangeInterface;
-use QueueTest\Mocks\Entity\QueueEntity;
+use Queue\Resources\MessageInterface;
 
 /**
  * @author Marco.Souza<marco.souza@tricae.com.br>
@@ -21,16 +17,7 @@ class ConsumerMock extends Consumer
      */
     public function process(MessageInterface $message)
     {
-        echo $message->getBody();
+        echo $message->getBody() . PHP_EOL;
         $message->setAck();
-    }
-
-
-    /**
-     * @return InterfaceQueue
-     */
-    public function queue()
-    {
-        return new QueueEntity();
     }
 }

@@ -1,6 +1,7 @@
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="Unit Tests">
+            <directory suffix="Test.php">Integration</directory>
             <directory suffix="Test.php">Unit</directory>
         </testsuite>
     </testsuites>

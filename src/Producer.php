@@ -1,32 +1,45 @@
 <?php
-/**
- * @author Marco.Souza<marco.souza@tricae.com.br>
- * @since 2015.08.28
- *
- */
 
 namespace Queue;
 
-use Queue\Driver\MessageInterface;
+use Queue\Driver\Connection as DriverConnection;
+use Queue\Resources\MessageInterface;
+use Queue\Resources\ExchangeInterface;
 
 abstract class Producer extends AbstractProcess implements ProducerInterface
 {
-
     /**
-     * @param string $message
-     * @return MessageInterface
+     * @var ExchangeInterface
      */
-    public function prepare($message)
+    private $exchange;
+
+    public function __construct(DriverConnection $connection, ExchangeInterface $exchange)
     {
-        return $this->getConnection()->prepare($message);
+        parent::__construct($connection);
+        $this->exchange = $exchange;
     }
 
     /**
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritdoc}
      */
-    final public function publish(MessageInterface $message)
+    public function getExchange()
     {
-        $this->getConnection()->publish($message, $this->exchange());
+        return $this->exchange;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prepare($message)
+    {
+        return $this->getConnection()->getDriver()->createMessage($message);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function publish(MessageInterface $message, $routingKey = '')
+    {
+        $this->getConnection()->publish($message, $this->getExchange(), $routingKey);
     }
 }

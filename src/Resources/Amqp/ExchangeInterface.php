@@ -6,9 +6,9 @@ use Queue\Resources\AutoDelete;
 use Queue\Resources\Durable;
 use Queue\Resources\Internal;
 use Queue\Resources\Passive;
-use Queue\Resources\TunnelInterface as ResourceTunnelInterface;
+use Queue\Resources\ExchangeInterface as BaseExchangeInterface;
 
-interface TunnelInterface extends ResourceInterface, ResourceTunnelInterface, Durable, Passive, AutoDelete, Internal
+interface ExchangeInterface extends ResourceInterface, BaseExchangeInterface, Durable, Passive, AutoDelete, Internal
 {
     const DURABLE = 1;
     const PASSIVE = 2;

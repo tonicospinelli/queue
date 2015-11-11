@@ -2,7 +2,7 @@
 
 namespace Queue\Resources;
 
-interface MessageInterface extends AttributeInterface
+interface MessageInterface extends AttributeInterface, Requeue
 {
     const ACK = 1;
 

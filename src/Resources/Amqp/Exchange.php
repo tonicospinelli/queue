@@ -3,12 +3,12 @@
 namespace Queue\Resources\Amqp;
 
 use Queue\Component\BitwiseFlag;
-use Queue\Resources\Tunnel as TunnelResource;
+use Queue\Resources\Exchange as BaseExchange;
 
 /**
- * Class Tunnel is a Value Object
+ * Class Exchange is a Value Object
  */
-class Tunnel extends TunnelResource implements TunnelInterface
+class Exchange extends BaseExchange implements ExchangeInterface
 {
     use BitwiseFlag;
 

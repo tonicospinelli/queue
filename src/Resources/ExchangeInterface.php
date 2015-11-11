@@ -2,7 +2,7 @@
 
 namespace Queue\Resources;
 
-interface TunnelInterface extends AttributeInterface
+interface ExchangeInterface extends AttributeInterface
 {
     const TYPE_DIRECT = 'direct';
     const TYPE_FANOUT = 'fanout';
@@ -22,29 +22,29 @@ interface TunnelInterface extends AttributeInterface
     /**
      * @return array
      */
-    public function getRoutes();
+    public function getBindings();
 
     /**
      * @param string $name
      * @return QueueInterface[]
      */
-    public function getQueuesFromRoute($name);
+    public function getQueuesFromBinding($name);
 
     /**
      * @param string $name
      * @return bool
      */
-    public function hasRoute($name);
+    public function hasBinding($name);
 
     /**
-     * @param array $routes
+     * @param array $bindings
      */
-    public function setRoutes(array $routes);
+    public function setBindings(array $bindings);
 
     /**
-     * @param $queueName
-     * @param string $routeName
+     * @param string $queueName
+     * @param string $routingKey
      * @return void
      */
-    public function addRoute($queueName, $routeName = '');
+    public function addBinding($queueName, $routingKey = '');
 }

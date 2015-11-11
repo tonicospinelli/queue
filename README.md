@@ -16,43 +16,57 @@ $ cd tests/
 $ cp config.php.dist config.php
 $ phpunit .
 ```
+### Prepare environment
+
+```php
+// bootstrap.php
+
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/tests/config.php';
+
+$configuration = new \Queue\Configuration(\Queue\Driver::AMQP, RABBIT_HOST, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD);
+
+$connection = \Queue\DriverManager::getConnection($configuration);
+
+$queue = $connection->getDriver()->createQueue('logs.error');
+$exchange = $connection->getDriver()->createExchange('logs.error', \Queue\Resources\Exchange::TYPE_DIRECT, array());
+$exchange->addBinding($queue->getName(), 'error');
+
+$connection->createQueue($queue);
+$connection->createExchange($exchange);
+$connection->bind($queue, $exchange, 'error');
+```
 
 ### How to publish a Message
 
 ```php
-require_once __DIR__ . '/vendor/autoload.php';
+// publisher.php
 
-use Queue\Configuration;
-use Queue\Driver;
-use Queue\DriverManager;
-use QueueTest\Fake\ProducerFake;
+require_once __DIR__ . '/bootstrap.php';
 
-$configuration = new Configuration(Driver::AMQP, 'host', 5672, 'user', 'pass');
+$producer = new \QueueTest\Mocks\Producer\ProducerMock($connection, $exchange);
 
-$connection = DriverManager::getConnection($configuration);
+if (empty($argv[1])) {
+    throw new InvalidArgumentException('message not found to publish');
+}
 
-$queue = new ProducerFake($connection);
+$message = $producer->prepare($argv[1]);
 
-$message = $queue->prepare(123);
+$producer->publish($message, 'error');
 
-$queue->publish($message);
+$connection->close();
 ```
 
 ### How to Consume Messages
 
 ```php
-require_once __DIR__ . '/vendor/autoload.php';
+// consumer.php
 
-use Queue\Configuration;
-use Queue\Driver;
-use Queue\DriverManager;
-use QueueTest\Fake\ConsumerFake;
+require_once __DIR__ . '/bootstrap.php';
 
-$connection = DriverManager::getConnection(
-    new Configuration(Driver::AMQP, 'host', 5672, 'user', 'pass')
-);
+$consumer = new \QueueTest\Mocks\Consumer\ConsumerMock($connection, $queue);
 
-$queue = new ConsumerFake($connection, ConsumerFake::PERSISTENT);
+$consumer->consume();
 
-$queue->consume();
+$connection->close();
 ```

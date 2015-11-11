@@ -16,13 +16,15 @@ class ConnectionFake
 {
     public static function inMemory($forceException = false)
     {
-        return DriverManager::getConnection(new Configuration(Driver::IN_MEMORY, null, null, null, null, array('forceException' => $forceException)));
+        $connection = DriverManager::getConnection(new Configuration(Driver::IN_MEMORY, null, null, null, null, array('forceException' => $forceException)));
+        return $connection;
     }
 
     public static function amqp($forceException = false)
     {
         $host = ($forceException ? : RABBIT_HOST);
-        return DriverManager::getConnection(new Configuration(Driver::AMQP, $host, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD));
+        $connection = DriverManager::getConnection(new Configuration(Driver::AMQP, $host, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD));
+        return $connection;
     }
 
     public static function providerAll()

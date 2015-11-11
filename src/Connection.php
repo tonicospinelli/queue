@@ -3,13 +3,9 @@
 namespace Queue;
 
 use Queue\Driver\Connection as DriverConnection;
-use Queue\Driver\MessageInterface;
-
-use Queue\Entity\AbstractBind as BindEntity;
-use Queue\Entity\AbstractExchange as ExchangeEntity;
-use Queue\Entity\AbstractExchange;
-use Queue\Entity\AbstractQueue as QueueEntity;
-use Queue\Entity\AbstractQueue;
+use Queue\Resources\MessageInterface;
+use Queue\Resources\QueueInterface;
+use Queue\Resources\ExchangeInterface;
 
 class Connection implements DriverConnection
 {
@@ -35,11 +31,19 @@ class Connection implements DriverConnection
     }
 
     /**
-     * @return Driver
+     * {@inheritdoc}
      */
     public function getDriver()
     {
         return $this->driver;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDriverName()
+    {
+        return $this->getDriver()->getName();
     }
 
     /**
@@ -72,23 +76,15 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function publish(MessageInterface $message, AbstractExchange $exchange)
+    public function publish(MessageInterface $message, ExchangeInterface $exchange, $routingKey = '')
     {
-        $this->connect()->publish($message, $exchange);
+        $this->connect()->publish($message, $exchange, $routingKey);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function prepare($message, array $properties = array(), $id = null)
-    {
-        return $this->connect()->prepare($message, $properties, $id);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchOne(AbstractQueue $queue)
+    public function fetchOne(QueueInterface $queue)
     {
         return $this->connect()->fetchOne($queue);
     }
@@ -109,11 +105,10 @@ class Connection implements DriverConnection
         $this->connect()->nack($message);
     }
 
-
     /**
      * {@inheritdoc}
      */
-    public function createQueue(QueueEntity $queue)
+    public function createQueue(QueueInterface $queue)
     {
         $this->connect()->createQueue($queue);
     }
@@ -121,15 +116,15 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function dropQueue(QueueEntity $queue)
+    public function deleteQueue(QueueInterface $queue)
     {
-        $this->connect()->dropQueue($queue);
+        $this->connect()->deleteQueue($queue);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createExchange(ExchangeEntity $exchange)
+    public function createExchange(ExchangeInterface $exchange)
     {
         $this->connect()->createExchange($exchange);
     }
@@ -137,24 +132,24 @@ class Connection implements DriverConnection
     /**
      * {@inheritdoc}
      */
-    public function dropExchange(ExchangeEntity $exchange)
+    public function deleteExchange(ExchangeInterface $exchange)
     {
-        $this->connect()->dropExchange($exchange);
+        $this->connect()->deleteExchange($exchange);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createBind(BindEntity $bind)
+    public function bind(QueueInterface $queue, ExchangeInterface $exchange, $routingKey = '')
     {
-        $this->connect()->createBind($bind);
+        $this->connect()->bind($queue, $exchange, $routingKey);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dropBind(BindEntity $bind)
+    public function unbind(QueueInterface $queue, ExchangeInterface $exchange, $routingKey = '')
     {
-        $this->connect()->dropBind($bind);
+        $this->connect()->unbind($queue, $exchange, $routingKey);
     }
 }
