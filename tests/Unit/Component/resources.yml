@@ -1,0 +1,18 @@
+resources:
+    queues:
+        "logs.error":
+            durable: true
+            auto_delete: false
+        "logs.something":
+            durable: true
+            auto_delete: false
+    exchanges:
+        "logs":
+            type: "direct"
+            durable: true
+            auto_delete: false
+            bindings:
+                error:
+                    queues: ["logs.error", "logs.something"]
+                warning:
+                    queues: ["logs.something"]

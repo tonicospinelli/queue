@@ -107,8 +107,9 @@ interface Connection
      *
      * @param QueueInterface $queue The Queue.
      * @param ExchangeInterface $exchange The exchange.
-     * @param string $routingKey [optional] Depending on the exchange type, the exchange may or may not use the Route Key
-     *                           to determine the queues to which it should publish the message.
+     * @param string $routingKey [optional] Depending on the exchange type, the exchange may or
+     *                           may not use the Route Key to determine the queues to which it
+     *                           should publish the message.
      * @throws BaseDriver\Exception\InvalidResourceException
      * @return void
      */
