@@ -8,7 +8,6 @@ php:
 
 install:
     - composer install --dev --no-interaction --prefer-source
-    - ipcs
 
 script:
     - vendor/bin/phpunit -c phpunit.xml.dist --testsuite unit
