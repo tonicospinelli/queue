@@ -1,5 +1,5 @@
 # Queue
-A PHP Lib for Handle Queue 
+A PHP Lib for Handle Queue and keep it simple to publish and consume messages.
 
 ### Setup
 
@@ -11,25 +11,25 @@ $ composer install
 
 ### Tests
 
+You must be install RabbitMQ to run integration tests.
+
 ```
-$ cd tests/
-$ cp config.php.dist config.php
-$ phpunit .
+$ phpunit -c phpunit.xml.dist
 ```
+
 ### Prepare environment
 
 ```php
 // bootstrap.php
 
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/tests/config.php';
 
-$configuration = new \Queue\Configuration(\Queue\Driver::AMQP, RABBIT_HOST, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD);
+$configuration = new \Queue\Configuration(\Queue\Driver::AMQP, '127.0.0.1', 5672, 'guest', 'guest');
 
 $connection = \Queue\DriverManager::getConnection($configuration);
 
 $queue = $connection->getDriver()->createQueue('logs.error');
-$exchange = $connection->getDriver()->createExchange('logs.error', \Queue\Resources\Exchange::TYPE_DIRECT, array());
+$exchange = $connection->getDriver()->createExchange('logs.error', \Queue\Resources\Exchange::TYPE_DIRECT);
 $exchange->addBinding($queue->getName(), 'error');
 
 $connection->createQueue($queue);
@@ -44,7 +44,11 @@ $connection->bind($queue, $exchange, 'error');
 
 require_once __DIR__ . '/bootstrap.php';
 
-$producer = new \QueueTest\Mocks\Producer\ProducerMock($connection, $exchange);
+class DummyProducer extends \Queue\Producer
+{
+}
+
+$producer = new DummyProducer($connection, $exchange);
 
 if (empty($argv[1])) {
     throw new InvalidArgumentException('message not found to publish');
@@ -64,7 +68,16 @@ $connection->close();
 
 require_once __DIR__ . '/bootstrap.php';
 
-$consumer = new \QueueTest\Mocks\Consumer\ConsumerMock($connection, $queue);
+class EchoConsumer extends \Queue\Consumer
+{
+    public function process(\Queue\Resources\MessageInterface $message)
+    {
+        echo $message->getBody() . PHP_EOL;
+        $message->setAck();
+    }
+}
+
+$consumer = new EchoConsumer($connection, $queue);
 
 $consumer->consume();
 

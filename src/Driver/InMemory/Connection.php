@@ -100,7 +100,7 @@ class Connection implements \Queue\Driver\Connection
                 continue;
             }
             foreach ($queues as $queue) {
-                $this->send($queue, $message);
+                $this->send($queue->getName(), $message);
             }
         }
     }
@@ -188,7 +188,7 @@ class Connection implements \Queue\Driver\Connection
      */
     public function bind(QueueInterface $queue, ExchangeInterface $exchange, $routingKey = '')
     {
-        $this->exchanges[$exchange->getName()]->addBinding($queue->getName(), $routingKey);
+        $this->exchanges[$exchange->getName()]->addBinding($queue, $routingKey);
     }
 
     /**

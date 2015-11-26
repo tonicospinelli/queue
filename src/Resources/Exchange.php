@@ -91,14 +91,14 @@ class Exchange extends Object implements ExchangeInterface
     /**
      * {@inheritdoc}
      */
-    public function addBinding($queueName, $routingKey = '')
+    public function addBinding(QueueInterface $queue, $routingKey = '')
     {
         $queues = array();
         if (isset($this->bindings[$routingKey])) {
             $queues = $this->bindings[$routingKey];
         }
-        if (!in_array($queueName, $queues)) {
-            array_push($queues, $queueName);
+        if (!isset($queues[$queue->getName()])) {
+            $queues[$queue->getName()] = $queue;
         }
         $this->bindings[$routingKey] = $queues;
     }

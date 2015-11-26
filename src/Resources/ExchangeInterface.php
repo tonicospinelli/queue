@@ -20,7 +20,7 @@ interface ExchangeInterface extends AttributeInterface
     public function getType();
 
     /**
-     * @return array
+     * @return QueueInterface[]
      */
     public function getBindings();
 
@@ -42,9 +42,9 @@ interface ExchangeInterface extends AttributeInterface
     public function setBindings(array $bindings);
 
     /**
-     * @param string $queueName
+     * @param QueueInterface $queue
      * @param string $routingKey
      * @return void
      */
-    public function addBinding($queueName, $routingKey = '');
+    public function addBinding(QueueInterface $queue, $routingKey = '');
 }

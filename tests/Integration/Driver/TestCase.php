@@ -208,7 +208,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected function createExchange(Connection $connection)
     {
         $exchange = $connection->getDriver()->createExchange(self::EXCHANGE_NAME, self::EXCHANGE_TYPE);
-        $exchange->addBinding(self::QUEUE_NAME, self::ROUTE_NAME);
+        $exchange->addBinding($this->createQueue($connection), self::ROUTE_NAME);
         return $exchange;
     }
 
