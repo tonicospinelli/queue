@@ -17,10 +17,10 @@ class AmqpTest extends TestCase
         return new BaseDriver\Amqp\Connection(
             new Configuration(
                 BaseDriver::AMQP,
-                RABBIT_HOST,
-                RABBIT_PORT,
-                RABBIT_USERNAME,
-                RABBIT_PASSWORD,
+                getenv('RABBIT_HOST'),
+                getenv('RABBIT_PORT'),
+                getenv('RABBIT_USERNAME'),
+                getenv('RABBIT_PASSWORD'),
                 array('no_wait' => true)
             ),
             new BaseDriver\Amqp\Driver()
