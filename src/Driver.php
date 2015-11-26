@@ -2,7 +2,7 @@
 
 namespace Queue;
 
-use Queue\Driver\Connection;
+use Queue\Driver\Connection as BaseConnection;
 use Queue\Driver\Exception\DriverException;
 use Queue\Resources\MessageInterface;
 use Queue\Resources\QueueInterface;
@@ -23,7 +23,7 @@ interface Driver
      *
      * @param ConfigurationInterface $configuration
      *
-     * @return Connection The database connection.
+     * @return BaseConnection The database connection.
      *
      * @throws DriverException
      */
