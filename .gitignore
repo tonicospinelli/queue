@@ -1,5 +1,5 @@
 vendor/
 .idea/
-tests/code-coverage/
+build/
 tests/config.php
-tests/phpunit.xml
+phpunit.xml

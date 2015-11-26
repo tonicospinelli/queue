@@ -1,0 +1,34 @@
+filter:
+    excluded_paths:
+        - tests/*
+        - vendor/*
+checks:
+    php:
+        code_rating: true
+        duplication: true
+tools:
+    php_analyzer: true
+    php_mess_detector: true
+    external_code_coverage:
+        timeout: 1200
+    php_changetracking: true
+    php_code_sniffer:
+        config:
+            standard: "PSR2"
+    php_cpd: true
+    php_pdepend: true
+    sensiolabs_security_checker: true
+
+build:
+    dependencies:
+        before:
+            - "sudo composer self-update"
+        override:
+            - "composer install --no-dev --no-interaction --prefer-dist"
+    tests:
+        override:
+            -
+                command: 'phpunit -c phpunit.xml.dist --coverage-clover=clover.xml --testsuite unit'
+                coverage:
+                    file: 'clover.xml'
+                    format: 'php-clover'
