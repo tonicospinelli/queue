@@ -9,7 +9,6 @@
 
 namespace Queue\Component;
 
-
 trait BitwiseFlag
 {
     /**
