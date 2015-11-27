@@ -14,7 +14,10 @@ class Message extends Object implements MessageInterface
     private $body;
 
     /**
-     * {@inheritdoc}
+     * Message constructor.
+     * @param string $body
+     * @param array $attributes
+     * @param string $uid
      */
     public function __construct($body, array $attributes = array(), $uid = null)
     {

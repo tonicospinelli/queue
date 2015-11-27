@@ -13,6 +13,11 @@ class Queue extends Object implements QueueInterface
      */
     private $name;
 
+    /**
+     * Queue constructor.
+     * @param string $name
+     * @param array $attributes
+     */
     public function __construct($name, array $attributes = array())
     {
         $this->name = $name;

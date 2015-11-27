@@ -13,9 +13,7 @@ class Exchange extends BaseExchange implements ExchangeInterface
     use BitwiseFlag;
 
     /**
-     * @param array $name
-     * @param string $type
-     * @param array $attributes
+     * {@inheritdoc}
      */
     public function __construct($name, $type, array $attributes = array())
     {

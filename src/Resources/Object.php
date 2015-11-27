@@ -10,6 +10,10 @@ abstract class Object implements AttributeInterface
 {
     private $attributes;
 
+    /**
+     * Object constructor.
+     * @param array $attributes
+     */
     public function __construct(array $attributes = array())
     {
         $this->attributes = $attributes;
