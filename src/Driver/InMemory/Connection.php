@@ -2,7 +2,6 @@
 
 namespace Queue\Driver\InMemory;
 
-use Queue\Configuration;
 use Queue\ConfigurationInterface;
 use Queue\Driver as BaseDriver;
 use Queue\Resources\MessageInterface;
@@ -11,10 +10,10 @@ use Queue\Resources\QueueInterface;
 use Queue\Resources\Exchange;
 use Queue\Resources\ExchangeInterface;
 
-class Connection implements \Queue\Driver\Connection
+class Connection implements BaseDriver\Connection
 {
     /**
-     * @var Configuration
+     * @var ConfigurationInterface
      */
     private $configuration;
 
@@ -76,7 +75,7 @@ class Connection implements \Queue\Driver\Connection
     }
 
     /**
-     * @return Configuration
+     * @return ConfigurationInterface
      */
     public function getConfiguration()
     {
@@ -122,7 +121,6 @@ class Connection implements \Queue\Driver\Connection
     {
         $connection = $this->getConnection($queue->getName());
         $msg_type = null;
-        $msg = null;
         $max_msg_size = 512;
         msg_receive($connection, 1, $msg_type, $max_msg_size, $message, true, MSG_IPC_NOWAIT);
         if (!$message) {

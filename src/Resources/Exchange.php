@@ -27,7 +27,7 @@ class Exchange extends Object implements ExchangeInterface
     /**
      * Exchange constructor.
      * @param string $name
-     * @param array $type
+     * @param string $type
      * @param array $attributes
      */
     public function __construct($name, $type, array $attributes = array())

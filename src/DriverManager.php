@@ -68,7 +68,7 @@ class DriverManager
      */
     public static function getConnection(ConfigurationInterface $configuration)
     {
-        $driverClassName = static::getClassName($configuration->getDriver());
+        $driverClassName = self::getClassName($configuration->getDriver());
 
         $driver = new $driverClassName();
 
