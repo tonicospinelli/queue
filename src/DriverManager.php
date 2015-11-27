@@ -2,6 +2,7 @@
 
 namespace Queue;
 
+use Queue\Driver\Exception\InvalidDriverException;
 use Queue\Driver\Exception\UnknownDriverException;
 use Queue\Exception\InvalidWrapperClassException;
 
@@ -27,10 +28,10 @@ class DriverManager
      */
     private static function getClassName($driverName)
     {
-        if (!isset(static::$drivers[$driverName])) {
-            throw new UnknownDriverException($driverName, static::getAvailableDrivers());
+        if (!isset(self::$drivers[$driverName])) {
+            throw new UnknownDriverException($driverName, self::getAvailableDrivers());
         }
-        return static::$drivers[$driverName];
+        return self::$drivers[$driverName];
     }
 
     /**
@@ -40,7 +41,24 @@ class DriverManager
      */
     public static function getAvailableDrivers()
     {
-        return array_keys(static::$drivers);
+        return array_keys(self::$drivers);
+    }
+
+    /**
+     * Adds a new supported driver.
+     *
+     * @param string $name Driver's name
+     * @param string $className Class name of driver
+     * @return void
+     * @throws InvalidDriverException
+     */
+    public static function addAvailableDriver($name, $className)
+    {
+        $ref = new \ReflectionClass($className);
+        if (!$ref->isSubclassOf('\Queue\Driver')) {
+            throw new InvalidDriverException($className);
+        }
+        self::$drivers[$name] = $ref->getName();
     }
 
     /**
