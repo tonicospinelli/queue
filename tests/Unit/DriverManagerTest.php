@@ -30,5 +30,19 @@ class DriverManagerTest extends \PHPUnit_Framework_TestCase
         $connection = DriverManager::getConnection(new Configuration(Driver::AMQP, '', null, '', ''));
         $this->assertInstanceOf('Queue\Connection', $connection);
     }
+
+    public function testAddANewSupportedDriver()
+    {
+        DriverManager::addAvailableDriver('test', $this->getMockForAbstractClass('\Queue\Driver'));
+        $this->assertContains('test', DriverManager::getAvailableDrivers());
+    }
+
+    /**
+     * @expectedException \Queue\Driver\Exception\InvalidDriverException
+     */
+    public function testFailWhenANewSupportedDriver()
+    {
+        DriverManager::addAvailableDriver('test', '\stdClass');
+    }
 }
  
