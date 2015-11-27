@@ -3,8 +3,9 @@
 namespace Queue;
 
 use Queue\Driver\Connection as DriverConnection;
-use Queue\Driver\MessageInterface;
+use Queue\Resources\MessageInterface;
 use Queue\Exception\RetryQueueException;
+use Queue\Resources\QueueInterface;
 
 abstract class Consumer extends AbstractProcess implements ConsumerInterface
 {
@@ -13,14 +14,20 @@ abstract class Consumer extends AbstractProcess implements ConsumerInterface
      */
     private $persistent;
 
-    public function __construct(DriverConnection $connection, $persistent = self::NOT_PERSISTENT)
+    /**
+     * @var QueueInterface
+     */
+    private $queue;
+
+    public function __construct(DriverConnection $connection, QueueInterface $queue, $persistent = self::NOT_PERSISTENT)
     {
         parent::__construct($connection);
         $this->persistent = $persistent;
+        $this->queue = $queue;
     }
 
     /**
-     * @return boolean
+     * {@inheritdoc}
      */
     public function isPersistent()
     {
@@ -28,11 +35,19 @@ abstract class Consumer extends AbstractProcess implements ConsumerInterface
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
+     */
+    public function getQueue()
+    {
+        return $this->queue;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     final public function consume()
     {
-        while (($message = $this->getConnection()->fetchOne($this->queue())) !== null || $this->isPersistent()) {
+        while (($message = $this->getConnection()->fetchOne($this->getQueue())) !== null || $this->isPersistent()) {
             if ($message instanceof MessageInterface) {
                 try {
                     $this->process($message);
@@ -40,7 +55,6 @@ abstract class Consumer extends AbstractProcess implements ConsumerInterface
                 } catch (RetryQueueException $retryQueue) {
                     $this->handleProcessMessage($message);
                     $producer = new ProducerRetry($this->getConnection(), $retryQueue->getExchange());
-                    $message->renewTimeToLive();
                     $producer->publish($message);
                 }
             }
@@ -53,7 +67,7 @@ abstract class Consumer extends AbstractProcess implements ConsumerInterface
     private function handleProcessMessage(MessageInterface $message)
     {
         switch (true) {
-            case $message->isNotAck():
+            case !$message->isAck():
                 $this->getConnection()->nack($message);
                 break;
             default:

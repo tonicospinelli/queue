@@ -1,4 +1,4 @@
 vendor/
 .idea/
-tests/code-coverage/
-tests/config.php
+build/
+phpunit.xml

@@ -1,6 +1,6 @@
 {
     "name": "tricae/queue",
-    "description": "A PHP Lib for Handle Queue (Rabbit, Redis, ...)",
+    "description": "A PHP Lib for Handle Queue (Rabbit, InMemory, ...)",
     "type": "library",
     "require": {
         "php": ">=5.4.0",
@@ -29,7 +29,7 @@
     ],
     "minimum-stability": "RC",
     "scripts": {
-        "test": "phpunit -c tests/phpunit.xml",
+        "test": "phpunit -c phpunit.xml.dist --testsuite unit",
         "phpmd": "phpmd src text cleancode,codesize,controversial,design,naming,unusedcode",
         "phpcs": "phpcs --standard=PSR2 src"
     }

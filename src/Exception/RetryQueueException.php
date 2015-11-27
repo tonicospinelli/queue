@@ -8,29 +8,29 @@
 namespace Queue\Exception;
 
 use Exception;
-use Queue\Entity\AbstractExchange;
+use Queue\Resources\ExchangeInterface;
 
 class RetryQueueException extends QueueException
 {
     /**
-     * @var AbstractExchange
+     * @var ExchangeInterface
      */
     protected $exchange;
 
     /**
-     * @param AbstractExchange $exchangeEntity
+     * @param ExchangeInterface $exchange
      * @param string $message
      * @param int $code
      * @param Exception $previous
      */
-    public function __construct(AbstractExchange $exchangeEntity, $message = "", $code = 0, Exception $previous = null)
+    public function __construct(ExchangeInterface $exchange, $message = "", $code = 0, Exception $previous = null)
     {
-        $this->exchange = $exchangeEntity;
+        $this->exchange = $exchange;
         parent::__construct($message, $code, $previous);
     }
 
     /**
-     * @return AbstractExchange
+     * @return ExchangeInterface
      */
     public function getExchange()
     {

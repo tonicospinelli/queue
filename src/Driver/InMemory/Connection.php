@@ -2,146 +2,211 @@
 
 namespace Queue\Driver\InMemory;
 
+use Queue\Configuration;
 use Queue\ConfigurationInterface;
-use Queue\Driver\MessageInterface;
-use Queue\Entity\AbstractExchange;
-use Queue\Entity\AbstractQueue;
-use Queue\Entity\AbstractBind as BindEntity;
-use Queue\Entity\AbstractExchange as ExchangeEntity;
-use Queue\Entity\AbstractQueue as QueueEntity;
+use Queue\Driver as BaseDriver;
+use Queue\Resources\MessageInterface;
+use Queue\Resources\Queue;
+use Queue\Resources\QueueInterface;
+use Queue\Resources\Exchange;
+use Queue\Resources\ExchangeInterface;
 
 class Connection implements \Queue\Driver\Connection
 {
+    /**
+     * @var Configuration
+     */
+    private $configuration;
+
     /**
      * @var array
      */
     protected $connection;
 
-    public function __construct(ConfigurationInterface $configuration)
+    /**
+     * @var BaseDriver
+     */
+    protected $driver;
+
+    /**
+     * @var Queue[]
+     */
+    private $queues;
+
+    /**
+     * @var Exchange[]
+     */
+    private $exchanges;
+
+    public function __construct(ConfigurationInterface $configuration, BaseDriver $driver)
     {
-        $throw = $configuration->getOption('forceException', false);
-        if($throw)
-            throw new \Exception();
+        $this->queues = array();
+        $this->exchanges = array();
+        $this->configuration = $configuration;
+        $this->driver = $driver;
+        $this->connection = array();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function close()
-    {}
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prepare($message, array $properties = array(), $id = null)
+    public function getDriver()
     {
-        return new Message($message, $properties, $id);
+        return $this->driver;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function publish(MessageInterface $message, AbstractExchange $exchange)
+    public function getDriverName()
     {
-        $connection = $this->getConnection($exchange->getExchangeName());
-        msg_send($connection, 1 , $message->getBody());
+        return $this->getDriver()->getName();
     }
 
+    /**
+     * @param string $queue
+     * @return resource
+     */
     private function getConnection($queue)
     {
-        if( ! isset($this->connection[$queue])) {
+        if (!isset($this->connection[$queue])) {
             $this->connection[$queue] = msg_get_queue(rand());
         }
         return $this->connection[$queue];
     }
 
     /**
+     * @return Configuration
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function fetchOne(AbstractQueue $queue)
+    public function close()
     {
-        $connection = $this->getConnection($queue->getQueueName());
-        $msg_type = NULL;
-        $msg = NULL;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function publish(MessageInterface $message, ExchangeInterface $exchange, $routingKey = '')
+    {
+        foreach ($exchange->getBindings() as $routeName => $queues) {
+            if (!preg_match('/' . $routeName . '/', $routingKey)) {
+                continue;
+            }
+            foreach ($queues as $queue) {
+                $this->send($queue->getName(), $message);
+            }
+        }
+    }
+
+    /**
+     * @param string $queue
+     * @param MessageInterface $message
+     */
+    private function send($queue, MessageInterface $message)
+    {
+        $connection = $this->getConnection($queue);
+        msg_send($connection, 1, $message->getBody());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fetchOne(QueueInterface $queue)
+    {
+        $connection = $this->getConnection($queue->getName());
+        $msg_type = null;
+        $msg = null;
         $max_msg_size = 512;
         msg_receive($connection, 1, $msg_type, $max_msg_size, $message, true, MSG_IPC_NOWAIT);
         if (!$message) {
             return null;
         }
-        return $this->prepare($message);
+        return $this->getDriver()->createMessage($message, array('queue' => $queue->getName()));
     }
 
     /**
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritdoc}
      */
     public function ack(MessageInterface $message)
     {
     }
 
     /**
-     *
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritdoc}
      */
     public function nack(MessageInterface $message)
     {
-    }
-
-
-
-    /**
-     * @param QueueEntity $queue
-     * @return void
-     */
-    public function createQueue(QueueEntity $queue)
-    {
-        // TODO: Implement createQueue() method.
+        if ($queue = $message->getAttribute('queue')) {
+            $this->send($queue, $message);
+        }
     }
 
     /**
-     * @param QueueEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function dropQueue(QueueEntity $queue)
+    public function createQueue(QueueInterface $queue)
     {
-        // TODO: Implement dropQueue() method.
+        $this->queues[$queue->getName()] = $queue;
+        $this->getConnection($queue->getName());
     }
 
     /**
-     * @param ExchangeEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function createExchange(ExchangeEntity $queue)
+    public function deleteQueue(QueueInterface $queue)
     {
-        // TODO: Implement createExchange() method.
+        $connection = $this->getConnection($queue->getName());
+        msg_remove_queue($connection);
+        unset($this->queues[$queue->getName()]);
     }
 
     /**
-     * @param ExchangeEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function dropExchange(ExchangeEntity $queue)
+    public function createExchange(ExchangeInterface $exchange)
     {
-        // TODO: Implement dropExchange() method.
+        $this->exchanges[$exchange->getName()] = $exchange;
     }
 
     /**
-     * @param BindEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function createBind(BindEntity $queue)
+    public function deleteExchange(ExchangeInterface $exchange)
     {
-        // TODO: Implement createBind() method.
+        unset($this->exchanges[$exchange->getName()]);
     }
 
     /**
-     * @param BindEntity $queue
-     * @return void
+     * {@inheritdoc}
      */
-    public function dropBind(BindEntity $queue)
+    public function bind(QueueInterface $queue, ExchangeInterface $exchange, $routingKey = '')
     {
-        // TODO: Implement dropBind() method.
+        $this->exchanges[$exchange->getName()]->addBinding($queue, $routingKey);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unbind(QueueInterface $queue, ExchangeInterface $exchange, $routingKey = '')
+    {
+        $bindings = $this->exchanges[$exchange->getName()]->getBindings();
+
+        if (!isset($bindings[$routingKey])) {
+            return;
+        }
+
+        $queues = array_filter($bindings[$routingKey], function ($queueName) use ($queue) {
+            return $queueName != $queue;
+        });
+
+        $bindings[$routingKey] = $queues;
+        $this->exchanges[$exchange->getName()]->setBindings($bindings);
     }
 }
-

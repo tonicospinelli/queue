@@ -54,8 +54,8 @@ class DriverManager
 
         $driver = new $driverClassName();
 
-        $wrapperClass = $configuration->getOption('wrapperClass', 'Queue\Connection');
-        if (!is_subclass_of($wrapperClass, 'Queue\Driver\Connection')) {
+        $wrapperClass = $configuration->getOption('wrapperClass', '\Queue\Connection');
+        if (!is_subclass_of($wrapperClass, '\Queue\Driver\Connection')) {
             throw new InvalidWrapperClassException($wrapperClass);
         }
 

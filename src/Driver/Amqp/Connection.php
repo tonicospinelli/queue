@@ -2,50 +2,90 @@
 
 namespace Queue\Driver\Amqp;
 
-use Queue\Driver\Exception\BindException;
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPConnection;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPProtocolChannelException;
+use PhpAmqpLib\Message\AMQPMessage;
+use Queue\Component\BitwiseFlag;
 use Queue\ConfigurationInterface;
-use Queue\Driver\Exception\DivergentEntityException;
-use Queue\Driver\MessageInterface;
-use Queue\Entity\AbstractBindExchange;
-use Queue\Entity\AbstractBindQueue;
-use Queue\Entity\AbstractExchange;
-use Queue\Entity\AbstractQueue;
-use Queue\Entity\AbstractBind as BindEntity;
-use Queue\Entity\AbstractExchange as ExchangeEntity;
-use Queue\Entity\AbstractQueue as QueueEntity;
+use Queue\Driver as BaseDriver;
+use Queue\Driver\Exception\InvalidResourceException;
+use Queue\Resources\QueueInterface;
+use Queue\Resources\MessageInterface;
+use Queue\Resources\ExchangeInterface;
 
 class Connection implements \Queue\Driver\Connection
 {
+    use BitwiseFlag;
+    const NO_WAIT = 1;
+
     /**
-     * @var AMQPConnection
+     * @var AMQPStreamConnection
      */
     private $connection;
+
     /**
      * @var AMQPChannel
      */
     private $channel;
 
-    public function __construct(ConfigurationInterface $configuration)
+    /**
+     * @var BaseDriver
+     */
+    private $driver;
+
+    public function __construct(ConfigurationInterface $configuration, BaseDriver $driver)
     {
-        $this->connection = new AMQPConnection(
+        $this->driver = $driver;
+        $this->connection = new AMQPStreamConnection(
             $configuration->getHostname(),
             $configuration->getPort(),
             $configuration->getUsername(),
             $configuration->getPassword(),
             $configuration->getOption('vhost', '/'),
             $configuration->getOption('insist', false),
-            $configuration->getOption('login_method', "AMQPLAIN"),
+            $configuration->getOption('login_method', 'AMQPLAIN'),
             $configuration->getOption('login_response', null),
-            $configuration->getOption('locale', "en_US"),
+            $configuration->getOption('locale', 'en_US'),
             $configuration->getOption('connection_timeout', 3),
             $configuration->getOption('read_write_timeout', 3),
             $configuration->getOption('context', null),
             $configuration->getOption('keepalive', false),
             $configuration->getOption('heartbeat', 0)
         );
+        $this->setNoWait($configuration->getOption('no_wait', false));
+    }
+
+    /**
+     * @return BaseDriver
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDriverName()
+    {
+        return $this->getDriver()->getName();
+    }
+
+    /**
+     * @param boolean $confirm
+     */
+    public function setNoWait($confirm = true)
+    {
+        $this->setFlag(self::NO_WAIT, $confirm);
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isNoWait()
+    {
+        return $this->isFlagSet(self::NO_WAIT);
     }
 
     /**
@@ -59,32 +99,31 @@ class Connection implements \Queue\Driver\Connection
     /**
      * {@inheritdoc}
      */
-    public function prepare($message, array $properties = array(), $id = null)
+    public function publish(MessageInterface $message, ExchangeInterface $exchange, $routingKey = '')
     {
-        return new Message($message, $properties, $id);
+        if (!$exchange instanceof \Queue\Resources\Amqp\ExchangeInterface) {
+            throw new InvalidResourceException(BaseDriver::AMQP);
+        }
+
+        $amqpMessage = new AMQPMessage($message->getBody(), $message->getAttributes());
+        $this->getChannel()->basic_publish($amqpMessage, $exchange->getName(), $routingKey);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function publish(MessageInterface $message, AbstractExchange $exchange)
+    public function fetchOne(QueueInterface $queue)
     {
-        $channel = $this->getChannel();
-        $channel->basic_publish(Message::createAMQPMessage($message), $exchange->getExchangeName(), $message->getRoutingKey());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchOne(AbstractQueue $queue)
-    {
-        $channel = $this->getChannel();
-        $message = $channel->basic_get($queue->getQueueName());
+        $message = $this->getChannel()->basic_get($queue->getName());
         if (!$message) {
             return null;
         }
 
-        return Message::create($message);
+        $id = null;
+        if ($message->has('delivery_tag')) {
+            $id = $message->get('delivery_tag');
+        }
+        return $this->getDriver()->createMessage($message->body, $message->get_properties(), $id);
     }
 
     /**
@@ -103,7 +142,7 @@ class Connection implements \Queue\Driver\Connection
      */
     public function ack(MessageInterface $message)
     {
-        $this->getChannel()->basic_ack($message->getId());
+        $this->getChannel()->basic_ack($message->getUid());
     }
 
     /**
@@ -111,87 +150,91 @@ class Connection implements \Queue\Driver\Connection
      */
     public function nack(MessageInterface $message)
     {
-        $this->getChannel()->basic_nack($message->getId(), false, $message->isRequeue());
-    }
+        if (!$message instanceof \Queue\Resources\Amqp\MessageInterface) {
+            throw new InvalidResourceException(BaseDriver::AMQP);
+        }
 
+        $this->getChannel()->basic_nack($message->getUid(), false, $message->isRequeue());
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function createQueue(QueueEntity $queue)
+    public function createQueue(QueueInterface $queue)
     {
-        $channel = $this->connection->channel();
+        if (!$queue instanceof \Queue\Resources\Amqp\QueueInterface) {
+            throw new InvalidResourceException(BaseDriver::AMQP);
+        }
+
         try {
-            $channel->queue_declare($queue->getQueueName(), false, $queue->isDurable(), false, $queue->isAutoDelete(), false, $queue->getQueueArguments());
-        } catch (AMQPProtocolChannelException $amqpException) {
-            throw new DivergentEntityException('This Queue is different from servers', 0, $amqpException);
+            $this->getChannel()->queue_declare(
+                $queue->getName(),
+                $queue->isPassive(),
+                $queue->isDurable(),
+                $queue->isExclusive(),
+                $queue->isAutoDelete(),
+                $this->isNoWait(),
+                $queue->getAttributes()
+            );
+        } catch (AMQPProtocolChannelException $e) {
+            throw new BaseDriver\Exception\DivergentStructureException($e->getMessage());
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dropQueue(QueueEntity $queue)
+    public function deleteQueue(QueueInterface $queue)
     {
-        $channel = $this->connection->channel();
-        $channel->queue_delete($queue->getQueueName());
+        $this->getChannel()->queue_delete($queue->getName(), false, false);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createExchange(ExchangeEntity $exchange)
+    public function createExchange(ExchangeInterface $exchange)
     {
-        $channel = $this->connection->channel();
+        if (!$exchange instanceof \Queue\Resources\Amqp\ExchangeInterface) {
+            throw new InvalidResourceException(BaseDriver::AMQP);
+        }
+
         try {
-            $channel->exchange_declare($exchange->getExchangeName(), $exchange->getType(), false, $exchange->isDurable(), $exchange->isAutoDelete(), $exchange->isInternal() , false, $exchange->getExchangeArguments());
-        } catch (AMQPProtocolChannelException $amqpException) {
-            throw new DivergentEntityException('This Exchange is different from servers', 0, $amqpException);
+            $this->getChannel()->exchange_declare(
+                $exchange->getName(),
+                $exchange->getType(),
+                $exchange->isPassive(),
+                $exchange->isDurable(),
+                $exchange->isAutoDelete(),
+                $exchange->isInternal(),
+                $this->isNoWait(),
+                $exchange->getAttributes()
+            );
+        } catch (AMQPProtocolChannelException $e) {
+            throw new BaseDriver\Exception\DivergentStructureException($e->getMessage());
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dropExchange(ExchangeEntity $exchange)
+    public function deleteExchange(ExchangeInterface $exchange)
     {
-        $channel = $this->connection->channel();
-        $channel->exchange_delete($exchange->getExchangeName());
+        $this->getChannel()->exchange_delete($exchange->getName());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createBind(BindEntity $bind)
+    public function bind(QueueInterface $queue, ExchangeInterface $exchange, $routingKey = '')
     {
-        $channel = $this->connection->channel();
-        $exchangeName = $bind->getExchange()->getExchangeName();
-        $routingKey = $bind->getRoutingKey();
-        try {
-            if($bind instanceof AbstractBindQueue) {
-                $channel->queue_bind($bind->getTargetQueue()->getQueueName(), $exchangeName, $routingKey);
-            } elseif ($bind instanceof AbstractBindExchange) {
-                $channel->exchange_bind($bind->getTargetExchange()->getExchangeName(), $exchangeName, $routingKey);
-            }
-        } catch (AMQPProtocolChannelException $amqpException) {
-            if ( $amqpException->getCode() == 404) {
-                throw new BindException('Queue or Exchange not exist', 404, $amqpException);
-            }
-        }
+        $this->getChannel()->queue_bind($queue->getName(), $exchange->getName(), $routingKey);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dropBind(BindEntity $bind)
+    public function unbind(QueueInterface $queue, ExchangeInterface $exchange, $routingKey = '')
     {
-        $channel = $this->connection->channel();
-        $exchangeName = $bind->getExchange()->getExchangeName();
-        $routingKey = $bind->getRoutingKey();
-        if($bind instanceof AbstractBindQueue) {
-            $channel->queue_unbind($bind->getTargetQueue()->getQueueName(), $exchangeName, $routingKey);
-        } elseif ($bind instanceof AbstractBindExchange) {
-            $channel->exchange_unbind($bind->getTargetExchange()->getExchangeName(), $exchangeName, $routingKey);
-        }
+        $this->getChannel()->queue_unbind($queue->getName(), $exchange->getName(), $routingKey);
     }
 }

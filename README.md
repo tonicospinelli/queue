@@ -1,5 +1,5 @@
 # Queue
-A PHP Lib for Handle Queue 
+A PHP Lib for Handle Queue and keep it simple to publish and consume messages.
 
 ### Setup
 
@@ -11,48 +11,75 @@ $ composer install
 
 ### Tests
 
+You must be install RabbitMQ to run integration tests.
+
 ```
-$ cd tests/
-$ cp config.php.dist config.php
-$ phpunit .
+$ phpunit -c phpunit.xml.dist
+```
+
+### Prepare environment
+
+```php
+// bootstrap.php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$configuration = new \Queue\Configuration(\Queue\Driver::AMQP, '127.0.0.1', 5672, 'guest', 'guest');
+
+$connection = \Queue\DriverManager::getConnection($configuration);
+
+$queue = $connection->getDriver()->createQueue('logs.error');
+$exchange = $connection->getDriver()->createExchange('logs.error', \Queue\Resources\Exchange::TYPE_DIRECT);
+$exchange->addBinding($queue->getName(), 'error');
+
+$connection->createQueue($queue);
+$connection->createExchange($exchange);
+$connection->bind($queue, $exchange, 'error');
 ```
 
 ### How to publish a Message
 
 ```php
-require_once __DIR__ . '/vendor/autoload.php';
+// publisher.php
 
-use Queue\Configuration;
-use Queue\Driver;
-use Queue\DriverManager;
-use QueueTest\Fake\ProducerFake;
+require_once __DIR__ . '/bootstrap.php';
 
-$configuration = new Configuration(Driver::AMQP, 'host', 5672, 'user', 'pass');
+class DummyProducer extends \Queue\Producer
+{
+}
 
-$connection = DriverManager::getConnection($configuration);
+$producer = new DummyProducer($connection, $exchange);
 
-$queue = new ProducerFake($connection);
+if (empty($argv[1])) {
+    throw new InvalidArgumentException('message not found to publish');
+}
 
-$message = $queue->prepare(123);
+$message = $producer->prepare($argv[1]);
 
-$queue->publish($message);
+$producer->publish($message, 'error');
+
+$connection->close();
 ```
 
 ### How to Consume Messages
 
 ```php
-require_once __DIR__ . '/vendor/autoload.php';
+// consumer.php
 
-use Queue\Configuration;
-use Queue\Driver;
-use Queue\DriverManager;
-use QueueTest\Fake\ConsumerFake;
+require_once __DIR__ . '/bootstrap.php';
 
-$connection = DriverManager::getConnection(
-    new Configuration(Driver::AMQP, 'host', 5672, 'user', 'pass')
-);
+class EchoConsumer extends \Queue\Consumer
+{
+    public function process(\Queue\Resources\MessageInterface $message)
+    {
+        echo $message->getBody() . PHP_EOL;
+        $message->setAck();
+    }
+}
 
-$queue = new ConsumerFake($connection, ConsumerFake::PERSISTENT);
+$consumer = new EchoConsumer($connection, $queue);
 
-$queue->consume();
+$consumer->consume();
+
+$connection->close();
 ```

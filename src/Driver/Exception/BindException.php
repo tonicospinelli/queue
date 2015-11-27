@@ -7,8 +7,6 @@
 
 namespace Queue\Driver\Exception;
 
-
 class BindException extends AbstractDriverException
 {
-
-} 
+}
