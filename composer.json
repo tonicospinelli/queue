@@ -2,6 +2,7 @@
     "name": "tricae/queue",
     "description": "A PHP Lib for Handle Queue (Rabbit, InMemory, ...)",
     "type": "library",
+    "license": "MIT",
     "require": {
         "php": ">=5.4.0",
         "videlalvaro/php-amqplib": "2.4.*"
